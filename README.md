@@ -1,5 +1,5 @@
-# AMdk
-Dekoder szyfru skryptów Aidem Media
+# AMkd
+Koder/dekoder szyfru skryptów Aidem Media
 
 
 Uwaga: używanie tego oprogramowania oraz dokonywanie jakichkolwiek zmian w produktach firmy Aidem Media jest niezgodne z umową licencyjną (zawieraną między Nabywcą a Firmą "z chwilą zdjęcia z opakowania płyty CD folii zabezpieczającej"), zgodnie z punktem drugim wspomnianej umowy:
