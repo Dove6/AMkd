@@ -5,18 +5,29 @@
 
 int BUFSIZE = 16777216;
 
+#ifdef _WIN32
+char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
+            Uzycie: AMkd [operacja] [plik]\n\n\
+            Dostepne operacje:\n\
+            /d\t\tdekoduje ciag tekstowy; opcja domyslna\n\
+            /e, /k\tkoduje ciag tekstowy\n\n\
+            Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^Z)\n\n\
+            Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n\
+            \trozszerzeniem, odpowiednio .dek lub .kod.\n";
+#else
+char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
+            Uzycie: AMkd [operacja] [plik]\n\n\
+            Dostepne operacje:\n\
+            -d\t\tdekoduje ciag tekstowy; opcja domyslna\n\
+            -e, -k\tkoduje ciag tekstowy\n\n\
+            Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^D)\n\n\
+            Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n\
+            \trozszerzeniem, odpowiednio .dek lub .kod.\n";
+#endif
+
 void print_help(void)
 {
-    puts("Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
-         Uzycie: AM_kodek [operacja] [plik]\n\n\
-         Dostepne operacje:\n\
-         -d\t\tdekoduje ciag tekstowy; opcja domyslna\n\
-         -e, -k\tkoduje ciag tekstowy\n\n\
-         Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF:\n\
-         ^Z\t\tdla Windows\n\
-         ^D\t\tdla *nix\n\n\
-         Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n\
-         \trozszerzeniem, odpowiednio .dek lub .kod.\n");
+    puts(help);
 }
 
 void cod(char *input, char *output, short var) {
@@ -109,91 +120,70 @@ int main(int argc, char **argv)
         ip = 0, //console input pointer
         len; //length of buffer
     bool fp = false, //fp ? plik : konsola
-        decode = true; //decode ? dec() : cod()
+        decode = true, //decode ? dec() : cod()
+        cdprm = false; //codec parameter indicator
     FILE *fnew, //output file
         *src; //source file
-    if (argc > 3) {
-        print_help();
-        return 0;
-    } else if (argc == 3) { //operacja + plik
-        fp = true;
-        if (argv[1][1] == 'd');// decode = true;
-        else if (argv[1][1] == 'e' || argv[1][1] == 'k') {
-            decode = false;
-        } else {
-            print_help();
-            return 0;
-        }
-        src = fopen(argv[2], "rb");
-        if (!src) {
-            fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[2]);
-            return 0;
-        }
-        fseek(src, 0, SEEK_END);
-        fsize = ftell(src);
-        rewind(src);
-        if (fsize < BUFSIZE) {
-            input = malloc(BUFSIZE);
-            fread(input, fsize, 1, src);
-            fclose(src);
-            if (!decode) { //code
-                output = malloc(BUFSIZE * 1.5);
-                cod(input, output, 6);
-                char newname[strlen(argv[2]) + 5];
-                strcpy(newname, argv[2]);
-                strcat(newname, ".kod");
-                fnew = fopen(newname, "wb");
-                len = strlen(output);
-                fwrite(output, len, 1, fnew);
-                fclose(fnew);
-            } else { //decode
-                output = malloc(BUFSIZE);
-                dec(input, output);
-                char newname[strlen(argv[2]) + 5];
-                strcpy(newname, argv[2]);
-                strcat(newname, ".dek");
-                fnew = fopen(newname, "wb");
-                len = strlen(output);
-                fwrite(output, len, 1, fnew);
-                fclose(fnew);
+    if (argc > 1) {
+        #ifdef _WIN32
+        if (argv[1][0] == '/') {
+        #else
+        if (argv[1][0] == '-') {
+        #endif
+            cdprm = true;
+            if (argc == 2) fp = false;
+            else fp = true;
+            if (argv[1][1] == 'd') decode = true;
+            else if (argv[1][1] == 'e' || argv[1][1] == 'k') decode = false;
+            else {
+                print_help();
+                return 0;
             }
-            free(input);
-            free(output);
         } else {
-            fclose(src);
-            fputs("Blad wejscia: plik zbyt duzy", stderr);
-            return 0;
-        }
-    } else if (argc == 2) { //operacja ^ plik
-        if (argv[1][0] != '/' && argv[1][0] != '-') {
+            cdprm = false;
+            decode = true;
             fp = true;
-            src = fopen(argv[1], "rb");
+        }
+    }
+
+    if (fp) {
+        for (short i = 1 + cdprm; i < argc; i++) {
+            #ifdef _WIN32
+            if (argv[i][0] == '/') {
+            #else
+            if (argv[i][0] == '-') {
+            #endif
+                fputs("Dlaczego?", stderr);
+                print_help();
+                return 0;
+            }
+            src = fopen(argv[i], "rb");
             if (!src) {
-                fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[1]);
+                fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[i]);
                 return 0;
             }
             fseek(src, 0, SEEK_END);
             fsize = ftell(src);
             rewind(src);
             if (fsize < BUFSIZE) {
-                input = malloc(BUFSIZE);
+                input = (char *)malloc(BUFSIZE);
                 fread(input, fsize, 1, src);
                 fclose(src);
                 if (!decode) { //code
-                    output = malloc(BUFSIZE * 1.5);
+                    output = (char *)malloc(BUFSIZE * 1.5);
                     cod(input, output, 6);
-                    char newname[strlen(argv[1]) + 5];
-                    strcpy(newname, argv[1]);
+                    char newname[strlen(argv[i]) + 5];
+                    strcpy(newname, argv[i]);
                     strcat(newname, ".kod");
                     fnew = fopen(newname, "wb");
                     len = strlen(output);
                     fwrite(output, len, 1, fnew);
                     fclose(fnew);
                 } else { //decode
-                    output = malloc(BUFSIZE);
+                    output = (char *)malloc(BUFSIZE);
                     dec(input, output);
-                    char newname[strlen(argv[1]) + 5];
-                    strcpy(newname, argv[1]);
+                    char newname[strlen(argv[i]) + 5];
+                    strcpy(newname, argv[i]);
                     strcat(newname, ".dek");
                     fnew = fopen(newname, "wb");
                     len = strlen(output);
@@ -204,40 +194,13 @@ int main(int argc, char **argv)
                 free(output);
             } else {
                 fclose(src);
-                fputs("Blad wejscia: plik zbyt duzy", stderr);
+                fprintf(stderr, "Blad wejscia - plik zbyt duzy: %s\n", argv[i]);
                 return 0;
             }
-        } else {
-            if (argv[1][1] == 'd');
-            else if (argv[1][1] == 'e' || argv[1][1] == 'k') decode = false;
-            input = malloc(BUFSIZE);
-            buffer = malloc(BUFSIZE);
-            *buffer = 0;
-            *input = 0;
-            while (ip < BUFSIZE - 1) {
-                if (fgets(buffer, BUFSIZE - 1 - strlen(input), stdin) != NULL) {
-                    strcat(input, buffer);
-                    ip = strlen(input);
-                } else break;
-            }
-            if (strlen(input) == 0) {
-                fputs("Blad wejscia: brak wejscia\n", stderr);
-            } else {
-                if (!decode) {
-                    output = malloc(BUFSIZE * 1.5);
-                    cod(input, output, 6);
-                } else {
-                    output = malloc(BUFSIZE);
-                    dec(input, output);
-                }
-                puts(output);
-                free(output);
-            }
-            free(input);
         }
-    } else { //tryb interaktywny
-        input = malloc(BUFSIZE);
-        buffer = malloc(BUFSIZE);
+    } else {
+        input = (char *)malloc(BUFSIZE);
+        buffer = (char *)malloc(BUFSIZE);
         *buffer = 0;
         *input = 0;
         while (ip < BUFSIZE - 1) {
@@ -249,12 +212,18 @@ int main(int argc, char **argv)
         if (strlen(input) == 0) {
             fputs("Blad wejscia: brak wejscia\n", stderr);
         } else {
-            output = malloc(BUFSIZE);
-            cod(input, output, 6);
+            if (!decode) {
+                output = (char *)malloc(BUFSIZE * 1.5);
+                cod(input, output, 6);
+            } else {
+                output = (char *)malloc(BUFSIZE);
+                dec(input, output);
+            }
             puts(output);
             free(output);
         }
         free(input);
     }
+
     return 0;
 }
