@@ -31,7 +31,7 @@ void print_help(void)
     puts(help);
 }
 
-int calc_shift(short *step, short *shift, short mvmnt)
+int calc_shift(unsigned short *step, short *shift, unsigned short mvmnt)
 {
     (*step)++;
     if (*step > mvmnt) {
@@ -44,10 +44,11 @@ int calc_shift(short *step, short *shift, short mvmnt)
     return *shift;
 }
 
-void cod(FILE *input, FILE *output, short var) {
-    short step = 0, //current cipher step
-          shift = 0,
-          ecnt = 0; //count of "<E>"
+//TODO: support for probable reverse cipher ({<D:%hu>})
+void cod(FILE *input, FILE *output, unsigned short var) {
+    unsigned short step = 0, //current cipher step
+                   ecnt = 0; //count of "<E>"
+    short shift = 0;
     char buffer;
     fprintf(output, "{<C:%hu>}\n", var);
     fpos_t prev_pos;
@@ -77,35 +78,43 @@ void cod(FILE *input, FILE *output, short var) {
 
 void dec(FILE *input, FILE *output)
 {
-    short mvmnt,
-          step = 0,
-          shift = 0;
-    //TODO: support for probable reverse cipher ({<D:%hu>}) - "direction" variable
-    char direction, //c = subtraction first, d = addition first
+    unsigned short mvmnt,
+                   step = 0;
+    short shift = 0,
+          direction_multiplier = 1;
+    char direction,
          buffer;
+    fpos_t prev_pos;
     fscanf(input, "{<%c:%hu>}", &direction, &mvmnt);
+    switch (direction) {
+        case 'c':
+        case 'C': { //subtraction first
+            break;
+        }
+        case 'd':
+        case 'D': { //addition first
+            direction_multiplier *= -1;
+            break;
+        }
+        default: {
+            printf("Error: Unknown file format in file %s\n", input->_tmpfname);
+            return;
+        }
+    }
     while (fread(&buffer, 1, 1, input)) {
         if (buffer == '<') {
-            fread(&buffer, 1, 1, input);
-            if (buffer == 'E') {
-                fread(&buffer, 1, 1, input);
-                if (buffer == '>') {
-                    fputc('\n', output);
-                } else {
-                    char queue[3] = {'<', 'E', buffer};
-                    for (int i = 0; i < 3; i++) {
-                        fputc(queue[i] + calc_shift(&step, &shift, mvmnt), output);
-                    }
-                }
+            fgetpos(input, &prev_pos);
+            char e_buffer[2];
+            fread(&e_buffer, 1, 2, input);
+            if (e_buffer[0] == 'E' && e_buffer[1] == '>') {
+                fputc('\n', output);
             } else {
-                char queue[2] = {'<', buffer};
-                for (int i = 0; i < 2; i++) {
-                    fputc(queue[i] + calc_shift(&step, &shift, mvmnt), output);
-                }
+                fsetpos(input, &prev_pos);
+                fputc(buffer + calc_shift(&step, &shift, mvmnt) * direction_multiplier, output);
             }
         } else if (buffer == '\r' || buffer == '\n') {
         } else {
-            fputc(buffer + calc_shift(&step, &shift, mvmnt), output);
+            fputc(buffer + calc_shift(&step, &shift, mvmnt) * direction_multiplier, output);
         }
     }
 }
