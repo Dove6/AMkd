@@ -75,11 +75,20 @@ void cod(FILE *input, FILE *output, short var) {
     }*/
 }
 
+int dec_calc_shift(short *step, short *shift, short mvmnt)
+{
+    (*step)++;
+    if (*step > mvmnt) *step = 1;
+    *shift = *step / 2 + *step % 2;
+    if (*step % 2) *shift *= -1;
+    return *shift;
+}
+
 void dec(FILE *input, FILE *output)
 {
     short mvmnt;
-    char direction; //c = subtract firstly, d = add firstly
-    char buffer;
+    char direction, //c = subtraction first, d = addition first
+         buffer;
     fscanf(input, "{<%c:%hu>}", &direction, &mvmnt);
     fread(&buffer, 1, 1, input);
     if (buffer == '\r') {
@@ -93,9 +102,8 @@ void dec(FILE *input, FILE *output)
     } else if (buffer == '\n') {
         fread(&buffer, 1, 1, input);
     }
-    short step = 1, shift = step / 2 + step % 2;
-    if (step % 2) shift *= -1;
-    fputc(buffer + shift, output);
+    short step = 0, shift = 0;
+    fputc(buffer + dec_calc_shift(&step, &shift, mvmnt), output);
     while (fread(&buffer, 1, 1, input)) {
         if (buffer == '<') {
             fread(&buffer, 1, 1, input);
@@ -104,41 +112,20 @@ void dec(FILE *input, FILE *output)
                 if (buffer == '>') {
                     fputc('\n', output);
                 } else {
-                    step++;
-                    if (step > mvmnt) step = 1;
-                    shift = step / 2 + step % 2;
-                    if (step % 2) shift *= -1;
-                    fputc('<' + shift, output);
-                    step++;
-                    if (step > mvmnt) step = 1;
-                    shift = step / 2 + step % 2;
-                    if (step % 2) shift *= -1;
-                    fputc('E' + shift, output);
-                    step++;
-                    if (step > mvmnt) step = 1;
-                    shift = step / 2 + step % 2;
-                    if (step % 2) shift *= -1;
-                    fputc(buffer + shift, output);
+                    char queue[3] = {'<', 'E', buffer};
+                    for (int i = 0; i < 3; i++) {
+                        fputc(queue[i] + dec_calc_shift(&step, &shift, mvmnt), output);
+                    }
                 }
             } else {
-                step++;
-                if (step > mvmnt) step = 1;
-                shift = step / 2 + step % 2;
-                if (step % 2) shift *= -1;
-                fputc('<' + shift, output);
-                step++;
-                if (step > mvmnt) step = 1;
-                shift = step / 2 + step % 2;
-                if (step % 2) shift *= -1;
-                fputc(buffer + shift, output);
+                char queue[2] = {'<', buffer};
+                for (int i = 0; i < 2; i++) {
+                    fputc(queue[i] + dec_calc_shift(&step, &shift, mvmnt), output);
+                }
             }
         } else if (buffer == '\r' || buffer == '\n') {
         } else {
-            step++;
-            if (step > mvmnt) step = 1;
-            shift = step / 2 + step % 2;
-            if (step % 2) shift *= -1;
-            fputc(buffer + shift, output);
+            fputc(buffer + dec_calc_shift(&step, &shift, mvmnt), output);
         }
     }
 }
