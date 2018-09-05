@@ -55,27 +55,24 @@ void cod(FILE *input, FILE *output, short var) {
     while (fread(&buffer, 1, 1, input)) {
         if (buffer == '\r') {
             fread(&buffer, 1, 1, input);
-            if (buffer == '\n') {
-                fread(&buffer, 1, 1, input);
+            if (buffer != '\n') {
+                fsetpos(input, &prev_pos);
             }
             fputs("<E>", output);
             ecnt++;
         } else if (buffer == '\n') {
-            fread(&buffer, 1, 1, input);
             fputs("<E>", output);
             ecnt++;
         } else {
-
+            fputc(buffer - calc_shift(&step, &shift, var), output);
+            fgetpos(input, &prev_pos);
         }
         if (ecnt > 5) {
             fputc('\n', output);
             ecnt = 0;
         }
-        fputc(buffer - calc_shift(&step, &shift, var), output);
-        if (buffer - shift == '\a') {
-            fprintf(output, "\n\nDZIWNY ZNAK: %c (shift: -%hu)\n\n", buffer, shift);
-        }
     }
+    fputc('\n', output);
 }
 
 void dec(FILE *input, FILE *output)
