@@ -4,23 +4,23 @@
 #include <string.h>
 
 #ifdef _WIN32
-char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
-            Uzycie: AMkd [operacja] [plik]\n\n\
-            Dostepne operacje:\n\
-            /d\t\tdekoduje ciag tekstowy; opcja domyslna\n\
-            /e, /k\tkoduje ciag tekstowy\n\n\
-            Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^Z)\n\n\
-            Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n\
-            \trozszerzeniem, odpowiednio .dek lub .kod.\n";
+char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n"
+            "Uzycie: AMkd [operacja] [plik]\n\n"
+            "Dostepne operacje:\n"
+            "/d\tdekoduje ciag tekstowy; opcja domyslna\n"
+            "/e, /k\tkoduje ciag tekstowy\n\n"
+            "Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^Z)\n\n"
+            "Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n"
+            "\trozszerzeniem, odpowiednio .dek lub .kod.";
 #else
-char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
-            Uzycie: AMkd [operacja] [plik]\n\n\
-            Dostepne operacje:\n\
-            -d\t\tdekoduje ciag tekstowy; opcja domyslna\n\
-            -e, -k\tkoduje ciag tekstowy\n\n\
-            Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^D)\n\n\
-            Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n\
-            \trozszerzeniem, odpowiednio .dek lub .kod.\n";
+char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n"
+            "Uzycie: AMkd [operacja] [plik]\n\n"
+            "Dostepne operacje:\n"
+            "-d\tdekoduje ciag tekstowy; opcja domyslna\n"
+            "-e, -k\tkoduje ciag tekstowy\n\n"
+            "Program uruchomiony bez argumentow oczekuje na ciag znakow zakonczony EOF (^D)\n\n"
+            "Wynik operacji na pliku zapisywany jest w nowym pliku z dodatkowym\n"
+            "\trozszerzeniem, odpowiednio .dek lub .kod.";
 #endif
 
 /**
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
                 }
             //Incorrect parameter order
             } else {
-                fputs("Dlaczego?\n", stderr);
+                fputs("Dlaczego?\n\n", stderr);
                 print_help();
                 return 0;
             }
