@@ -177,7 +177,7 @@ int main(int argc, char **argv)
         #else
         if (argv[i][0] == '-') {
         #endif
-            if (i == 2) {
+            if (i == 1) {
                 switch (argv[i][1]) {
                     case 'd': {
                         break;
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
                 }
             //Incorrect parameter order
             } else {
-                fputs("Dlaczego?", stderr);
+                fputs("Dlaczego?\n", stderr);
                 print_help();
                 return 0;
             }
