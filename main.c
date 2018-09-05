@@ -31,79 +31,62 @@ void print_help(void)
     puts(help);
 }
 
-void cod(FILE *input, FILE *output, short var) {
-    /*int optr, //output pointer
-        iptr = 0, //input pointer
-        len = strlen(input); //input length
-    short step = 0, //current cipher step
-        ecnt = 0; //count of "<E>"
-    bool crlf = true;
-    sprintf(output, "{<C:%hu>}\n", var);
-    optr = strlen(output);
-    if (len > 0) {
-        if (!strstr(input, "\r\n")) crlf = false;
-        while (iptr < len) {
-            if (input[iptr] == '\r') {
-                output[optr] = '\0';
-                strcat(output, "<E>");
-                ecnt++;
-                iptr++;
-                optr += 3;
-            } else if (input[iptr] == '\n') {
-                output[optr] = '\0';
-                strcat(output, "<E>");
-                ecnt++;
-                optr += 3;
-            } else {
-                step++;
-                if (step > var) step = 1;
-                short shift = step / 2 + step % 2;
-                if (step % 2) shift *= -1;
-                output[optr] = input[iptr] - shift;
-                optr++;
-            }
-            if (ecnt > 5) {
-                output[optr] = '\0';*/
-                /*strcat(output, crlf ? "\r\n" : "\n");
-                optr += crlf + 1;*/
-                /*strcat(output, crlf ? "\r\n" : "\n");
-                optr += crlf + 1;
-                ecnt = 0;
-            }
-            iptr++;
-        }
-    }*/
-}
-
-int dec_calc_shift(short *step, short *shift, short mvmnt)
+int calc_shift(short *step, short *shift, short mvmnt)
 {
     (*step)++;
-    if (*step > mvmnt) *step = 1;
+    if (*step > mvmnt) {
+        *step = 1;
+    }
     *shift = *step / 2 + *step % 2;
-    if (*step % 2) *shift *= -1;
+    if (*step % 2) {
+        *shift *= -1;
+    }
     return *shift;
+}
+
+void cod(FILE *input, FILE *output, short var) {
+    short step = 0, //current cipher step
+          shift = 0,
+          ecnt = 0; //count of "<E>"
+    char buffer;
+    fprintf(output, "{<C:%hu>}\n", var);
+    fpos_t prev_pos;
+    fgetpos(input, &prev_pos);
+    while (fread(&buffer, 1, 1, input)) {
+        if (buffer == '\r') {
+            fread(&buffer, 1, 1, input);
+            if (buffer == '\n') {
+                fread(&buffer, 1, 1, input);
+            }
+            fputs("<E>", output);
+            ecnt++;
+        } else if (buffer == '\n') {
+            fread(&buffer, 1, 1, input);
+            fputs("<E>", output);
+            ecnt++;
+        } else {
+
+        }
+        if (ecnt > 5) {
+            fputc('\n', output);
+            ecnt = 0;
+        }
+        fputc(buffer - calc_shift(&step, &shift, var), output);
+        if (buffer - shift == '\a') {
+            fprintf(output, "\n\nDZIWNY ZNAK: %c (shift: -%hu)\n\n", buffer, shift);
+        }
+    }
 }
 
 void dec(FILE *input, FILE *output)
 {
-    short mvmnt;
+    short mvmnt,
+          step = 0,
+          shift = 0;
+    //TODO: support for probable reverse cipher ({<D:%hu>}) - "direction" variable
     char direction, //c = subtraction first, d = addition first
          buffer;
     fscanf(input, "{<%c:%hu>}", &direction, &mvmnt);
-    fread(&buffer, 1, 1, input);
-    if (buffer == '\r') {
-        fread(&buffer, 1, 1, input);
-        if (buffer == '\n') {
-            fread(&buffer, 1, 1, input);
-        } else {
-            fputs("Macintosh line-ending (CR) is unsupported!\n", stdout);
-            return;
-        }
-    } else if (buffer == '\n') {
-        fread(&buffer, 1, 1, input);
-    }
-    short step = 0, shift = 0;
-    fputc(buffer + dec_calc_shift(&step, &shift, mvmnt), output);
     while (fread(&buffer, 1, 1, input)) {
         if (buffer == '<') {
             fread(&buffer, 1, 1, input);
@@ -114,29 +97,29 @@ void dec(FILE *input, FILE *output)
                 } else {
                     char queue[3] = {'<', 'E', buffer};
                     for (int i = 0; i < 3; i++) {
-                        fputc(queue[i] + dec_calc_shift(&step, &shift, mvmnt), output);
+                        fputc(queue[i] + calc_shift(&step, &shift, mvmnt), output);
                     }
                 }
             } else {
                 char queue[2] = {'<', buffer};
                 for (int i = 0; i < 2; i++) {
-                    fputc(queue[i] + dec_calc_shift(&step, &shift, mvmnt), output);
+                    fputc(queue[i] + calc_shift(&step, &shift, mvmnt), output);
                 }
             }
         } else if (buffer == '\r' || buffer == '\n') {
         } else {
-            fputc(buffer + dec_calc_shift(&step, &shift, mvmnt), output);
+            fputc(buffer + calc_shift(&step, &shift, mvmnt), output);
         }
     }
 }
 
 int main(int argc, char **argv)
 {
-    bool fp = false, //fp ? plik : konsola
-        decode = true, //decode ? dec() : cod()
-        cdprm = false; //codec parameter indicator
+    bool fp = false, //fp ? file : command line
+         decode = true, //decode ? dec() : cod()
+         cdprm = false; //codec parameter indicator
     FILE *fnew, //output file
-        *src; //source file
+         *src; //source file
     if (argc > 1) {
         #ifdef _WIN32
         if (argv[1][0] == '/') {
@@ -144,11 +127,16 @@ int main(int argc, char **argv)
         if (argv[1][0] == '-') {
         #endif
             cdprm = true;
-            if (argc == 2) fp = false;
-            else fp = true;
-            if (argv[1][1] == 'd') decode = true;
-            else if (argv[1][1] == 'e' || argv[1][1] == 'k') decode = false;
-            else {
+            if (argc == 2) {
+                fp = false;
+            } else {
+                fp = true;
+            }
+            if (argv[1][1] == 'd') {
+                decode = true;
+            } else if (argv[1][1] == 'e' || argv[1][1] == 'k') {
+                decode = false;
+            } else {
                 print_help();
                 return 0;
             }
@@ -170,7 +158,7 @@ int main(int argc, char **argv)
                 print_help();
                 return 0;
             }
-            src = fopen(argv[i], "rb");
+            src = fopen(argv[i], "r");
             if (!src) {
                 fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[i]);
                 return 0;
@@ -179,14 +167,14 @@ int main(int argc, char **argv)
                 char newname[strlen(argv[i]) + 5];
                 strcpy(newname, argv[i]);
                 strcat(newname, ".kod");
-                fnew = fopen(newname, "wb");
+                fnew = fopen(newname, "w");
                 cod(src, fnew, 6);
                 fclose(fnew);
             } else { //decode
                 char newname[strlen(argv[i]) + 5];
                 strcpy(newname, argv[i]);
                 strcat(newname, ".dek");
-                fnew = fopen(newname, "wb");
+                fnew = fopen(newname, "w");
                 dec(src, fnew);
                 fclose(fnew);
             }
