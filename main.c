@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-//TODO: get rid of buffer and process on-time
-int BUFSIZE = 16777216;
-
 #ifdef _WIN32
 char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n\
             Uzycie: AMkd [operacja] [plik]\n\n\
@@ -26,11 +23,24 @@ char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Medi
             \trozszerzeniem, odpowiednio .dek lub .kod.\n";
 #endif
 
+/**
+    @brief Prints help text (global 'help' variable).
+*/
 void print_help(void)
 {
     puts(help);
 }
 
+/**
+    Sample shift chain for mvmnt = 6: -1, 1, -2, 2, -3, 3
+    @brief Calculate ASCII shift value for current character.
+
+    @param @a step - pointer to variable holding previous step value of cipher
+    @param @a shift - pointer to variable holding previous shift value
+    @param @a mvmnt - upper limit of step value
+
+    @return current shift value
+*/
 int calc_shift(unsigned short *step, short *shift, unsigned short mvmnt)
 {
     (*step)++;
@@ -44,30 +54,45 @@ int calc_shift(unsigned short *step, short *shift, unsigned short mvmnt)
     return *shift;
 }
 
-//TODO: support for probable reverse cipher ({<D:%hu>})
-void cod(FILE *input, FILE *output, unsigned short var) {
+/**
+    @brief Ciphers 'input' file contents and saves it in the 'output' file.
+
+    @param @a input - pointer to open input FILE stream
+    @param @a output - pointer to open output FILE stream
+    @param @a var - upper limit of step value
+    @param @a reverse - boolean indicating if cipher shift is negated
+*/
+void cod(FILE *input, FILE *output, unsigned short var, bool reverse) {
     unsigned short step = 0, //current cipher step
-                   ecnt = 0; //count of "<E>"
-    short shift = 0;
-    char buffer;
-    fprintf(output, "{<C:%hu>}\n", var);
+                   ecnt = 0; //count of '<E>' tags
+    short shift = 0,
+          direction_multiplier = 1;
+    char buffer,
+         direction = 'C';
+    if (reverse) {
+        direction_multiplier *= -1;
+        direction = 'D';
+    }
+    //Prints header indicating cipher 'direction' and range
+    fprintf(output, "{<%c:%hu>}\n", direction, var);
     fpos_t prev_pos;
-    fgetpos(input, &prev_pos);
     while (fread(&buffer, 1, 1, input)) {
-        if (buffer == '\r') {
+        if (buffer == '\r') { //CR or CRLF line ending
+            fgetpos(input, &prev_pos);
             fread(&buffer, 1, 1, input);
+            //In case of CR line ending, goes back a character in order not to omit it
             if (buffer != '\n') {
                 fsetpos(input, &prev_pos);
             }
             fputs("<E>", output);
             ecnt++;
-        } else if (buffer == '\n') {
+        } else if (buffer == '\n') { //LF line ending
             fputs("<E>", output);
             ecnt++;
         } else {
-            fputc(buffer - calc_shift(&step, &shift, var), output);
-            fgetpos(input, &prev_pos);
+            fputc(buffer - calc_shift(&step, &shift, var) * direction_multiplier, output);
         }
+        //Makes line break every 6 '<E>' tags
         if (ecnt > 5) {
             fputc('\n', output);
             ecnt = 0;
@@ -76,6 +101,12 @@ void cod(FILE *input, FILE *output, unsigned short var) {
     fputc('\n', output);
 }
 
+/**
+    @brief Deciphers 'input' file contents and saves it in the 'output' file.
+
+    @param @a input - pointer to open input FILE stream
+    @param @a output - pointer to open output FILE stream
+*/
 void dec(FILE *input, FILE *output)
 {
     unsigned short mvmnt,
@@ -85,7 +116,10 @@ void dec(FILE *input, FILE *output)
     char direction,
          buffer;
     fpos_t prev_pos;
-    fscanf(input, "{<%c:%hu>}", &direction, &mvmnt);
+    if (fscanf(input, "{<%c:%hu>}", &direction, &mvmnt) != 2) {
+        fprintf(stderr, "Blad czytania wejscia: %s\n", input->_tmpfname);
+        return;
+    }
     switch (direction) {
         case 'c':
         case 'C': { //subtraction first
@@ -97,7 +131,7 @@ void dec(FILE *input, FILE *output)
             break;
         }
         default: {
-            printf("Error: Unknown file format in file %s\n", input->_tmpfname);
+            fprintf(stderr, "Nieznany format pliku: %s\n", input->_tmpfname);
             return;
         }
     }
@@ -106,8 +140,10 @@ void dec(FILE *input, FILE *output)
             fgetpos(input, &prev_pos);
             char e_buffer[2];
             fread(&e_buffer, 1, 2, input);
+            //In case of '<E>' tag, outputs a new line
             if (e_buffer[0] == 'E' && e_buffer[1] == '>') {
                 fputc('\n', output);
+            //otherwise, processes a '<' character and reverts file position pointer just after it
             } else {
                 fsetpos(input, &prev_pos);
                 fputc(buffer + calc_shift(&step, &shift, mvmnt) * direction_multiplier, output);
@@ -119,78 +155,74 @@ void dec(FILE *input, FILE *output)
     }
 }
 
+/**
+    @brief Main function.
+
+    @param @a argc - arguments' count
+    @param @a argv - arguments' list
+*/
 int main(int argc, char **argv)
 {
-    bool fp = false, //fp ? file : command line
-         decode = true, //decode ? dec() : cod()
-         cdprm = false; //codec parameter indicator
-    FILE *fnew, //output file
-         *src; //source file
-    if (argc > 1) {
+    struct {
+        short file_count;
+        bool decode;
+    } options;
+    options.file_count = 0;
+    options.decode = true;
+    FILE *input,
+         *output;
+    for (short i = 1; i < argc; i++) {
         #ifdef _WIN32
-        if (argv[1][0] == '/') {
+        if (argv[i][0] == '/') {
         #else
-        if (argv[1][0] == '-') {
+        if (argv[i][0] == '-') {
         #endif
-            cdprm = true;
-            if (argc == 2) {
-                fp = false;
+            if (i == 2) {
+                switch (argv[i][1]) {
+                    case 'd': {
+                        break;
+                    }
+                    case 'e':
+                    case 'k': {
+                        options.decode = false;
+                    }
+                }
+            //Incorrect parameter order
             } else {
-                fp = true;
-            }
-            if (argv[1][1] == 'd') {
-                decode = true;
-            } else if (argv[1][1] == 'e' || argv[1][1] == 'k') {
-                decode = false;
-            } else {
-                print_help();
-                return 0;
-            }
-        } else {
-            cdprm = false;
-            decode = true;
-            fp = true;
-        }
-    }
-
-    if (fp) {
-        for (short i = 1 + cdprm; i < argc; i++) {
-            #ifdef _WIN32
-            if (argv[i][0] == '/') {
-            #else
-            if (argv[i][0] == '-') {
-            #endif
                 fputs("Dlaczego?", stderr);
                 print_help();
                 return 0;
             }
-            src = fopen(argv[i], "r");
-            if (!src) {
+        } else {
+            options.file_count++;
+            input = fopen(argv[i], "r");
+            if (!input) {
                 fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[i]);
                 return 0;
             }
-            if (!decode) { //code
-                char newname[strlen(argv[i]) + 5];
-                strcpy(newname, argv[i]);
-                strcat(newname, ".kod");
-                fnew = fopen(newname, "w");
-                cod(src, fnew, 6);
-                fclose(fnew);
-            } else { //decode
-                char newname[strlen(argv[i]) + 5];
-                strcpy(newname, argv[i]);
-                strcat(newname, ".dek");
-                fnew = fopen(newname, "w");
-                dec(src, fnew);
-                fclose(fnew);
+            char out_name[strlen(argv[i]) + 5];
+            strcpy(out_name, argv[i]);
+            strcat(out_name, options.decode ? ".dek" : ".kod");
+            output = fopen(out_name, "w");
+            if (!output) {
+                fprintf(stderr, "Cos poszlo nie tak przy tworzeniu pliku: %s\n", out_name);
+                return 0;
             }
-            fclose(src);
+            if (options.decode) {
+                dec(input, output);
+            } else {
+                cod(input, output, 6, false);
+            }
+            fclose(output);
+            fclose(input);
         }
-    } else {
-        if (!decode) {
-            cod(stdin, stdout, 6);
-        } else {
+    }
+
+    if (options.file_count == 0) {
+        if (options.decode) {
             dec(stdin, stdout);
+        } else {
+            cod(stdin, stdout, 6, false);
         }
     }
 
