@@ -93,7 +93,9 @@ void dec(FILE *input, FILE *output)
     } else if (buffer == '\n') {
         fread(&buffer, 1, 1, input);
     }
-    short step = 0, shift;
+    short step = 1, shift = step / 2 + step % 2;
+    if (step % 2) shift *= -1;
+    fputc(buffer + shift, output);
     while (fread(&buffer, 1, 1, input)) {
         if (buffer == '<') {
             fread(&buffer, 1, 1, input);
