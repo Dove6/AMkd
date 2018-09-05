@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+//TODO: get rid of buffer and process on-time
 int BUFSIZE = 16777216;
 
 #ifdef _WIN32
@@ -30,8 +31,8 @@ void print_help(void)
     puts(help);
 }
 
-void cod(char *input, char *output, short var) {
-    int optr, //output pointer
+void cod(FILE *input, FILE *output, short var) {
+    /*int optr, //output pointer
         iptr = 0, //input pointer
         len = strlen(input); //input length
     short step = 0, //current cipher step
@@ -62,63 +63,86 @@ void cod(char *input, char *output, short var) {
                 optr++;
             }
             if (ecnt > 5) {
-                output[optr] = '\0';
+                output[optr] = '\0';*/
                 /*strcat(output, crlf ? "\r\n" : "\n");
                 optr += crlf + 1;*/
-                strcat(output, crlf ? "\r\n" : "\n");
+                /*strcat(output, crlf ? "\r\n" : "\n");
                 optr += crlf + 1;
                 ecnt = 0;
             }
             iptr++;
         }
-    }
+    }*/
 }
 
-void dec(char *input, char *output)
+void dec(FILE *input, FILE *output)
 {
     short mvmnt;
-    int iptr, //input pointer
-        optr = 0, //output pointer
-        len = strlen(input);
-    bool crlf = true;
-    if (len >= 7) {
-        sscanf(input, "{<C:%hu>}\n", &mvmnt);
-        iptr = strchr(input, '}') - input + 1;
-        if (input[iptr] == '\r') iptr += 2;
-        else {
-            crlf = false;
-            iptr++;
+    char direction; //c = subtract firstly, d = add firstly
+    char buffer;
+    fscanf(input, "{<%c:%hu>}", &direction, &mvmnt);
+    fread(&buffer, 1, 1, input);
+    if (buffer == '\r') {
+        fread(&buffer, 1, 1, input);
+        if (buffer == '\n') {
+            fread(&buffer, 1, 1, input);
+        } else {
+            fputs("Macintosh line-ending (CR) is unsupported!\n", stdout);
+            return;
         }
-        short step = 0;
-        while (iptr < len) {
-            if (input[iptr] == '<' && input[iptr + 1] == 'E' && input[iptr + 2] == '>') {
-                output[optr] = '\0';
-                strcat(output, crlf ? "\r\n" : "\n");
-                optr += crlf ? 2 : 1;
-                iptr += 2;
-            } else if (input[iptr] == '\r');
-            else if (input[iptr] == '\n');
-            else {
+    } else if (buffer == '\n') {
+        fread(&buffer, 1, 1, input);
+    }
+    short step = 0, shift;
+    while (fread(&buffer, 1, 1, input)) {
+        if (buffer == '<') {
+            fread(&buffer, 1, 1, input);
+            if (buffer == 'E') {
+                fread(&buffer, 1, 1, input);
+                if (buffer == '>') {
+                    fputc('\n', output);
+                } else {
+                    step++;
+                    if (step > mvmnt) step = 1;
+                    shift = step / 2 + step % 2;
+                    if (step % 2) shift *= -1;
+                    fputc('<' + shift, output);
+                    step++;
+                    if (step > mvmnt) step = 1;
+                    shift = step / 2 + step % 2;
+                    if (step % 2) shift *= -1;
+                    fputc('E' + shift, output);
+                    step++;
+                    if (step > mvmnt) step = 1;
+                    shift = step / 2 + step % 2;
+                    if (step % 2) shift *= -1;
+                    fputc(buffer + shift, output);
+                }
+            } else {
                 step++;
                 if (step > mvmnt) step = 1;
-                short shift = step / 2 + step % 2;
+                shift = step / 2 + step % 2;
                 if (step % 2) shift *= -1;
-                output[optr] = input[iptr] + shift;
-                optr++;
+                fputc('<' + shift, output);
+                step++;
+                if (step > mvmnt) step = 1;
+                shift = step / 2 + step % 2;
+                if (step % 2) shift *= -1;
+                fputc(buffer + shift, output);
             }
-            iptr++;
+        } else if (buffer == '\r' || buffer == '\n') {
+        } else {
+            step++;
+            if (step > mvmnt) step = 1;
+            shift = step / 2 + step % 2;
+            if (step % 2) shift *= -1;
+            fputc(buffer + shift, output);
         }
     }
 }
 
 int main(int argc, char **argv)
 {
-    char *buffer, //console input buffer
-        *input, //main input buffer
-        *output; //main output buffer
-    int fsize, //file size
-        ip = 0, //console input pointer
-        len; //length of buffer
     bool fp = false, //fp ? plik : konsola
         decode = true, //decode ? dec() : cod()
         cdprm = false; //codec parameter indicator
@@ -162,67 +186,29 @@ int main(int argc, char **argv)
                 fprintf(stderr, "Nieprawidlowa nazwa pliku: %s\n", argv[i]);
                 return 0;
             }
-            fseek(src, 0, SEEK_END);
-            fsize = ftell(src);
-            rewind(src);
-            if (fsize < BUFSIZE) {
-                input = (char *)malloc(BUFSIZE);
-                fread(input, fsize, 1, src);
-                fclose(src);
-                if (!decode) { //code
-                    output = (char *)malloc(BUFSIZE * 1.5);
-                    cod(input, output, 6);
-                    char newname[strlen(argv[i]) + 5];
-                    strcpy(newname, argv[i]);
-                    strcat(newname, ".kod");
-                    fnew = fopen(newname, "wb");
-                    len = strlen(output);
-                    fwrite(output, len, 1, fnew);
-                    fclose(fnew);
-                } else { //decode
-                    output = (char *)malloc(BUFSIZE);
-                    dec(input, output);
-                    char newname[strlen(argv[i]) + 5];
-                    strcpy(newname, argv[i]);
-                    strcat(newname, ".dek");
-                    fnew = fopen(newname, "wb");
-                    len = strlen(output);
-                    fwrite(output, len, 1, fnew);
-                    fclose(fnew);
-                }
-                free(input);
-                free(output);
-            } else {
-                fclose(src);
-                fprintf(stderr, "Blad wejscia - plik zbyt duzy: %s\n", argv[i]);
-                return 0;
+            if (!decode) { //code
+                char newname[strlen(argv[i]) + 5];
+                strcpy(newname, argv[i]);
+                strcat(newname, ".kod");
+                fnew = fopen(newname, "wb");
+                cod(src, fnew, 6);
+                fclose(fnew);
+            } else { //decode
+                char newname[strlen(argv[i]) + 5];
+                strcpy(newname, argv[i]);
+                strcat(newname, ".dek");
+                fnew = fopen(newname, "wb");
+                dec(src, fnew);
+                fclose(fnew);
             }
+            fclose(src);
         }
     } else {
-        input = (char *)malloc(BUFSIZE);
-        buffer = (char *)malloc(BUFSIZE);
-        *buffer = 0;
-        *input = 0;
-        while (ip < BUFSIZE - 1) {
-            if (fgets(buffer, BUFSIZE - 1 - strlen(input), stdin) != NULL) {
-                strcat(input, buffer);
-                ip = strlen(input);
-            } else break;
-        }
-        if (strlen(input) == 0) {
-            fputs("Blad wejscia: brak wejscia\n", stderr);
+        if (!decode) {
+            cod(stdin, stdout, 6);
         } else {
-            if (!decode) {
-                output = (char *)malloc(BUFSIZE * 1.5);
-                cod(input, output, 6);
-            } else {
-                output = (char *)malloc(BUFSIZE);
-                dec(input, output);
-            }
-            puts(output);
-            free(output);
+            dec(stdin, stdout);
         }
-        free(input);
     }
 
     return 0;
