@@ -14,7 +14,7 @@ char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Medi
             "\trozszerzeniem, odpowiednio .dek lub .kod.";
 #else
 char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n"
-            "Uzycie: AMkd [operacja] [plik]\n\n"
+            "Uzycie: AMkd [operacja] [pliki]\n\n"
             "Dostepne operacje:\n"
             "-d\tdekoduje ciag tekstowy; opcja domyslna\n"
             "-e, -k\tkoduje ciag tekstowy\n\n"
@@ -185,6 +185,14 @@ int main(int argc, char **argv)
                     case 'e':
                     case 'k': {
                         options.decode = false;
+                        break;
+                    }
+                    #ifdef _WIN32
+                    case '?':
+                    #endif
+                    case 'h': {
+                        print_help();
+                        return 0;
                     }
                 }
             //Incorrect parameter order
