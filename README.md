@@ -1,6 +1,7 @@
 # AMkd
 Koder/dekoder szyfru skryptów Aidem Media
 
+Do pobrania [tutaj](https://github.com/Dove6/AMkd/raw/master/bin/Release/AMkd.exe).
 
 Uwaga: używanie tego oprogramowania oraz dokonywanie jakichkolwiek zmian w produktach firmy Aidem Media jest niezgodne z umową licencyjną (zawieraną między Nabywcą a Firmą "z chwilą zdjęcia z opakowania płyty CD folii zabezpieczającej"), zgodnie z punktem drugim wspomnianej umowy:
 
