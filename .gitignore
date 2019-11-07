@@ -56,4 +56,3 @@ dkms.conf
 bin
 nppBackup
 obj
-!bin/Release/AMkd.exe
