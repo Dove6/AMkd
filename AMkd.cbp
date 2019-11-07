@@ -33,7 +33,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c99" />
 		</Compiler>
-		<Unit filename="src/main.c">
+		<Unit filename="src/AMkd.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
