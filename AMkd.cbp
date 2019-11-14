@@ -36,11 +36,13 @@
 		<Unit filename="src/AMkd.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/AMkd.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
 			<lib_finder disable_auto="1" />
+			<fortran_project />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
