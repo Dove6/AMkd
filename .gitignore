@@ -1,26 +1,14 @@
-# Prerequisites
-*.d
-
 # Object files
+obj
 *.o
-*.ko
 *.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
 
 # Precompiled Headers
-*.gch
 *.pch
 
 # Libraries
 *.lib
 *.a
-*.la
-*.lo
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -29,30 +17,19 @@
 *.dylib
 
 # Executables
+bin
 *.exe
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
+# Code Blocks helper files
+*.depend
 *.layout
+
+# Windows Registry scripts
 *.reg
-bin
+
+# Notepad++ backup directory
 nppBackup
-obj
+
+# Doxygen configuration file
+Doxyfile

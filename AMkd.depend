@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1557681886 source:d:\programowanie\amkd\src\amkd.c
-	<stdio.h>
-	<stdlib.h>
-	<stdbool.h>
-	<string.h>
-

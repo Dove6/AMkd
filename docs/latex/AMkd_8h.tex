@@ -1,5 +1,5 @@
-\hypertarget{AMkd_8h}{}\doxysection{src/\+A\+Mkd.h File Reference}
-\label{AMkd_8h}\index{src/AMkd.h@{src/AMkd.h}}
+\hypertarget{AMkd_8h}{}\doxysection{include/\+A\+Mkd.h File Reference}
+\label{AMkd_8h}\index{include/AMkd.h@{include/AMkd.h}}
 
 
 A\+Mkd library header file.  
@@ -35,19 +35,21 @@ enum \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+err
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_a2606468095f81fa54b19e0dede546ba1}{A\+Mkd\+\_\+decode}} (const char $\ast$encoded\+\_\+str, char $\ast$$\ast$decoded\+\_\+str, \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} $\ast$settings)
+\mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_ac9e9634d274575fce942d507a755feb2}{A\+Mkd\+\_\+decode}} (const char $\ast$encoded\+\_\+str, char $\ast$$\ast$decoded\+\_\+str, \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} settings)
 \begin{DoxyCompactList}\small\item\em Decodes {\itshape encoded\+\_\+str} and places it at {\itshape $\ast$decoded\+\_\+str}. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_a629330e7f212e9af7b987cb4a9a79697}{A\+Mkd\+\_\+encode}} (const char $\ast$decoded\+\_\+str, char $\ast$$\ast$encoded\+\_\+str, \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} $\ast$settings)
+\mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_aa2300276c1f678c206831d1e37013f2f}{A\+Mkd\+\_\+encode}} (const char $\ast$decoded\+\_\+str, char $\ast$$\ast$encoded\+\_\+str, \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} settings)
 \begin{DoxyCompactList}\small\item\em Encodes {\itshape decoded\+\_\+str} and places it at {\itshape $\ast$encoded\+\_\+str}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_a9b2ffab7df81a26afe242ffbf1838dea}{A\+Mkd\+\_\+strip\+\_\+header}} (char $\ast$$\ast$encoded\+\_\+str)
-\begin{DoxyCompactList}\small\item\em Strips header from /a $\ast$encoded\+\_\+str (if present). \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Strips header from {\itshape $\ast$encoded\+\_\+str} (if present). \end{DoxyCompactList}\item 
 \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} \mbox{\hyperlink{AMkd_8h_a33db0504636c3c71f93f4192d441d246}{A\+Mkd\+\_\+detect\+\_\+encoding}} (const char $\ast$encoded\+\_\+str, \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} $\ast$settings)
 \begin{DoxyCompactList}\small\item\em Tries to detect encoding in {\itshape encoded\+\_\+str} and writes it into {\itshape $\ast$settings}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} \mbox{\hyperlink{AMkd_8h_a132ea2d1ae8905adf70a6dc6e7906119}{A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG}} \{6, \textquotesingle{}C\textquotesingle{}\}
-\begin{DoxyCompactList}\small\item\em Default encoding/decoding settings. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} \mbox{\hyperlink{AMkd_8h_a132ea2d1ae8905adf70a6dc6e7906119}{A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG}} = \{6, \textquotesingle{}C\textquotesingle{}\}
+\begin{DoxyCompactList}\small\item\em Default encoding/decoding settings. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} \mbox{\hyperlink{AMkd_8h_a29b96ba9ee444529ea69dfa8a26227d9}{A\+M\+K\+D\+\_\+\+N\+O\+N\+E\+\_\+\+C\+O\+N\+F\+IG}} = \{0, \textquotesingle{}C\textquotesingle{}\}
+\begin{DoxyCompactList}\small\item\em No encoding settings. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -68,44 +70,44 @@ Error codes returned by library functions.
 
 \begin{DoxyEnumFields}{Enumerator}
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_NO\_ERROR@{AMKD\_NO\_ERROR}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_NO\_ERROR@{AMKD\_NO\_ERROR}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564acd098e668858526efec808a2da1f4fff}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564acd098e668858526efec808a2da1f4fff}} 
-A\+M\+K\+D\+\_\+\+N\+O\+\_\+\+E\+R\+R\+OR&no error \\
+A\+M\+K\+D\+\_\+\+N\+O\+\_\+\+E\+R\+R\+OR&No error. \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_MISSING\_SETTINGS@{AMKD\_MISSING\_SETTINGS}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_MISSING\_SETTINGS@{AMKD\_MISSING\_SETTINGS}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564af21da1940b5e280f9c639772b7965582}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564af21da1940b5e280f9c639772b7965582}} 
-A\+M\+K\+D\+\_\+\+M\+I\+S\+S\+I\+N\+G\+\_\+\+S\+E\+T\+T\+I\+N\+GS&error\+: no settings provided for encoding/decoding \\
+A\+M\+K\+D\+\_\+\+M\+I\+S\+S\+I\+N\+G\+\_\+\+S\+E\+T\+T\+I\+N\+GS&Error\+: no settings provided for encoding/decoding. \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_SURPLUS\_SETTINGS@{AMKD\_SURPLUS\_SETTINGS}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_SURPLUS\_SETTINGS@{AMKD\_SURPLUS\_SETTINGS}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564a063b241e6a020ac861875a955de1c6fc}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564a063b241e6a020ac861875a955de1c6fc}} 
-A\+M\+K\+D\+\_\+\+S\+U\+R\+P\+L\+U\+S\+\_\+\+S\+E\+T\+T\+I\+N\+GS&warning\+: decoding settings present in encoded string and additionally provided by user; settings from string are used \begin{DoxySeeAlso}{See also}
-\mbox{\hyperlink{AMkd_8h_a2606468095f81fa54b19e0dede546ba1}{A\+Mkd\+\_\+decode}} 
+A\+M\+K\+D\+\_\+\+S\+U\+R\+P\+L\+U\+S\+\_\+\+S\+E\+T\+T\+I\+N\+GS&Warning\+: decoding settings present in encoded string and additionally provided by user; settings from string are used. \begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{AMkd_8h_ac9e9634d274575fce942d507a755feb2}{A\+Mkd\+\_\+decode}} 
 \end{DoxySeeAlso}
 \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_MISSING\_HEADER@{AMKD\_MISSING\_HEADER}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_MISSING\_HEADER@{AMKD\_MISSING\_HEADER}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564a93bb0c154aea6e25cdf1ffa68a68dcff}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564a93bb0c154aea6e25cdf1ffa68a68dcff}} 
-A\+M\+K\+D\+\_\+\+M\+I\+S\+S\+I\+N\+G\+\_\+\+H\+E\+A\+D\+ER&warning\+: no header to strip \begin{DoxySeeAlso}{See also}
+A\+M\+K\+D\+\_\+\+M\+I\+S\+S\+I\+N\+G\+\_\+\+H\+E\+A\+D\+ER&Warning\+: no header to strip. \begin{DoxySeeAlso}{See also}
 \mbox{\hyperlink{AMkd_8h_a9b2ffab7df81a26afe242ffbf1838dea}{A\+Mkd\+\_\+strip\+\_\+header}} 
 \end{DoxySeeAlso}
 \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_OUT\_OF\_MEMORY@{AMKD\_OUT\_OF\_MEMORY}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_OUT\_OF\_MEMORY@{AMKD\_OUT\_OF\_MEMORY}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564ae71439b3202fbf97e454769d6f7072a6}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564ae71439b3202fbf97e454769d6f7072a6}} 
-A\+M\+K\+D\+\_\+\+O\+U\+T\+\_\+\+O\+F\+\_\+\+M\+E\+M\+O\+RY&error\+: no memory available for allocation for output string \\
+A\+M\+K\+D\+\_\+\+O\+U\+T\+\_\+\+O\+F\+\_\+\+M\+E\+M\+O\+RY&Error\+: no memory available for allocation for output string. \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{AMKD\_CONTROL\_CHARS@{AMKD\_CONTROL\_CHARS}!AMkd.h@{AMkd.h}}\index{AMkd.h@{AMkd.h}!AMKD\_CONTROL\_CHARS@{AMKD\_CONTROL\_CHARS}}}\mbox{\Hypertarget{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564adfacf4cb89c1634c42551be2ea0a9ab8}\label{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564adfacf4cb89c1634c42551be2ea0a9ab8}} 
-A\+M\+K\+D\+\_\+\+C\+O\+N\+T\+R\+O\+L\+\_\+\+C\+H\+A\+RS&warning\+: control characters present in decoded string (may suggest incorrect decoding) \\
+A\+M\+K\+D\+\_\+\+C\+O\+N\+T\+R\+O\+L\+\_\+\+C\+H\+A\+RS&Warning\+: control characters present in decoded string (may suggest incorrect decoding) \\
 \hline
 
 \end{DoxyEnumFields}
 
 
 \doxysubsection{Function Documentation}
-\mbox{\Hypertarget{AMkd_8h_a2606468095f81fa54b19e0dede546ba1}\label{AMkd_8h_a2606468095f81fa54b19e0dede546ba1}} 
+\mbox{\Hypertarget{AMkd_8h_ac9e9634d274575fce942d507a755feb2}\label{AMkd_8h_ac9e9634d274575fce942d507a755feb2}} 
 \index{AMkd.h@{AMkd.h}!AMkd\_decode@{AMkd\_decode}}
 \index{AMkd\_decode@{AMkd\_decode}!AMkd.h@{AMkd.h}}
 \doxysubsubsection{\texorpdfstring{AMkd\_decode()}{AMkd\_decode()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} A\+Mkd\+\_\+decode (\begin{DoxyParamCaption}\item[{const char $\ast$}]{encoded\+\_\+str,  }\item[{char $\ast$$\ast$}]{decoded\+\_\+str,  }\item[{\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} $\ast$}]{settings }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} A\+Mkd\+\_\+decode (\begin{DoxyParamCaption}\item[{const char $\ast$}]{encoded\+\_\+str,  }\item[{char $\ast$$\ast$}]{decoded\+\_\+str,  }\item[{\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}}}]{settings }\end{DoxyParamCaption})}
 
 
 
@@ -117,7 +119,7 @@ Decodes {\itshape encoded\+\_\+str} and places it at {\itshape $\ast$decoded\+\_
 \hline
 {\em decoded\+\_\+str} & Address of decoded null-\/terminated string \char`\"{}returned\char`\"{} by function. \\
 \hline
-{\em settings} & Decoding settings. If {\itshape encoded\+\_\+str} has a header, they are not used. For defaults see A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG\\
+{\em settings} & Decoding settings. If {\itshape encoded\+\_\+str} has a header, they are not used. For defaults see \mbox{\hyperlink{AMkd_8h_a132ea2d1ae8905adf70a6dc6e7906119}{A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG}}\\
 \hline
 \end{DoxyParams}
 \begin{DoxyWarning}{Warning}
@@ -133,6 +135,8 @@ Allocates memory for the decoded string\+: {\itshape $\ast$decoded\+\_\+str} has
 
 Tries to detect encoding in {\itshape encoded\+\_\+str} and writes it into {\itshape $\ast$settings}. 
 
+For no or unknown encoding, the provided structure becomes equal to \mbox{\hyperlink{AMkd_8h_a29b96ba9ee444529ea69dfa8a26227d9}{A\+M\+K\+D\+\_\+\+N\+O\+N\+E\+\_\+\+C\+O\+N\+F\+IG}}
+
 
 \begin{DoxyParams}{Parameters}
 {\em encoded\+\_\+str} & Encoded null-\/terminated string. \\
@@ -140,11 +144,11 @@ Tries to detect encoding in {\itshape encoded\+\_\+str} and writes it into {\its
 {\em settings} & Address of config structure. Must be provided by user. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{AMkd_8h_a629330e7f212e9af7b987cb4a9a79697}\label{AMkd_8h_a629330e7f212e9af7b987cb4a9a79697}} 
+\mbox{\Hypertarget{AMkd_8h_aa2300276c1f678c206831d1e37013f2f}\label{AMkd_8h_aa2300276c1f678c206831d1e37013f2f}} 
 \index{AMkd.h@{AMkd.h}!AMkd\_encode@{AMkd\_encode}}
 \index{AMkd\_encode@{AMkd\_encode}!AMkd.h@{AMkd.h}}
 \doxysubsubsection{\texorpdfstring{AMkd\_encode()}{AMkd\_encode()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} A\+Mkd\+\_\+encode (\begin{DoxyParamCaption}\item[{const char $\ast$}]{decoded\+\_\+str,  }\item[{char $\ast$$\ast$}]{encoded\+\_\+str,  }\item[{\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} $\ast$}]{settings }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{AMkd_8h_aac2cdaac1c5b20bc74ccb35485e5a564}{A\+Mkd\+\_\+error}} A\+Mkd\+\_\+encode (\begin{DoxyParamCaption}\item[{const char $\ast$}]{decoded\+\_\+str,  }\item[{char $\ast$$\ast$}]{encoded\+\_\+str,  }\item[{\mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}}}]{settings }\end{DoxyParamCaption})}
 
 
 
@@ -156,7 +160,7 @@ Encodes {\itshape decoded\+\_\+str} and places it at {\itshape $\ast$encoded\+\_
 \hline
 {\em encoded\+\_\+str} & Address of encoded null-\/terminated string \char`\"{}returned\char`\"{} by function. \\
 \hline
-{\em settings} & Encoding settings. For defaults see A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG\\
+{\em settings} & Encoding settings. For defaults see \mbox{\hyperlink{AMkd_8h_a132ea2d1ae8905adf70a6dc6e7906119}{A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG}}\\
 \hline
 \end{DoxyParams}
 \begin{DoxyWarning}{Warning}
@@ -170,7 +174,7 @@ Allocates memory for the encoded string\+: {\itshape $\ast$encoded\+\_\+str} has
 
 
 
-Strips header from /a $\ast$encoded\+\_\+str (if present). 
+Strips header from {\itshape $\ast$encoded\+\_\+str} (if present). 
 
 
 \begin{DoxyParams}{Parameters}
@@ -184,10 +188,20 @@ Strips header from /a $\ast$encoded\+\_\+str (if present).
 \index{AMkd.h@{AMkd.h}!AMKD\_DEFAULT\_CONFIG@{AMKD\_DEFAULT\_CONFIG}}
 \index{AMKD\_DEFAULT\_CONFIG@{AMKD\_DEFAULT\_CONFIG}!AMkd.h@{AMkd.h}}
 \doxysubsubsection{\texorpdfstring{AMKD\_DEFAULT\_CONFIG}{AMKD\_DEFAULT\_CONFIG}}
-{\footnotesize\ttfamily \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG \{6, \textquotesingle{}C\textquotesingle{}\}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} A\+M\+K\+D\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+C\+O\+N\+F\+IG = \{6, \textquotesingle{}C\textquotesingle{}\}}
 
 
 
 Default encoding/decoding settings. 
 
-Will work for any script taken from AM\textquotesingle{}s games. 
+Will work for any script taken from AM\textquotesingle{}s games. \mbox{\Hypertarget{AMkd_8h_a29b96ba9ee444529ea69dfa8a26227d9}\label{AMkd_8h_a29b96ba9ee444529ea69dfa8a26227d9}} 
+\index{AMkd.h@{AMkd.h}!AMKD\_NONE\_CONFIG@{AMKD\_NONE\_CONFIG}}
+\index{AMKD\_NONE\_CONFIG@{AMKD\_NONE\_CONFIG}!AMkd.h@{AMkd.h}}
+\doxysubsubsection{\texorpdfstring{AMKD\_NONE\_CONFIG}{AMKD\_NONE\_CONFIG}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structAMkd__config}{A\+Mkd\+\_\+config}} A\+M\+K\+D\+\_\+\+N\+O\+N\+E\+\_\+\+C\+O\+N\+F\+IG = \{0, \textquotesingle{}C\textquotesingle{}\}}
+
+
+
+No encoding settings. 
+
+Makes string pass without changes. 
