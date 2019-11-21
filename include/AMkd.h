@@ -6,14 +6,17 @@
 
 
 /*! \brief Error codes returned by library functions.
+
+    Warnings are negative numbers.
+    Errors are positive numbers.
  */
 enum AMkd_error {
-    AMKD_NO_ERROR = 0, //!< No error
-    AMKD_MISSING_SETTINGS, //!< Error: no settings provided for encoding/decoding
-    AMKD_SURPLUS_SETTINGS, //!< Warning: decoding settings present in encoded string and additionally provided by user; settings from string are used \sa AMkd_decode
-    AMKD_MISSING_HEADER, //!< Warning: no header to strip \sa AMkd_strip_header
-    AMKD_OUT_OF_MEMORY, //!< Error: no memory available for allocation for output string
-    AMKD_CONTROL_CHARS //!< Warning: control characters present in decoded string (may suggest incorrect decoding)
+    AMKD_ERROR_NONE = 0, //!< No error
+    AMKD_WARNING_SURPLUS_SETTINGS = -255, //!< Warning: decoding settings present in encoded string and additionally provided by user; settings from string are used \sa AMkd_decode
+    AMKD_WARNING_MISSING_HEADER, //!< Warning: no header to strip \sa AMkd_strip_header
+    AMKD_WARNING_CONTROL_CHARS, //!< Warning: control characters present in decoded string (may suggest incorrect decoding)
+    AMKD_ERROR_MISSING_SETTINGS = 1, //!< Error: no settings provided for encoding/decoding
+    AMKD_ERROR_OUT_OF_MEMORY //!< Error: no memory available for allocation for output string
 };
 /*! \brief Shorthand for #AMkd_error enumeration.
  */
@@ -34,20 +37,20 @@ typedef struct AMkd_config AMkd_config;
 
     Will work for any script taken from AM's games.
 */
-AMkd_config AMKD_DEFAULT_CONFIG = {6, 'C'};
+AMkd_config AMKD_CONFIG_DEFAULT = {6, 'C'};
 
 /*! \brief No encoding settings.
 
     Makes string pass without changes.
 */
-AMkd_config AMKD_NONE_CONFIG = {0, 'C'};
+AMkd_config AMKD_CONFIG_NONE = {0, 'C'};
 
 
 /*! \brief Decodes \a encoded_str and places it at \a *decoded_str.
 
     \param encoded_str Encoded null-terminated string.
     \param decoded_str Address of decoded null-terminated string "returned" by function.
-    \param settings Decoding settings. If \a encoded_str has a header, they are not used. For defaults see #AMKD_DEFAULT_CONFIG
+    \param settings Decoding settings. If \a encoded_str has a header, they are not used. For defaults see #AMKD_CONFIG_DEFAULT
 
     \warning Allocates memory for the decoded string: \a *decoded_str has to be manually freed.
  */
@@ -57,7 +60,7 @@ AMkd_error AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config 
 
     \param decoded_str Decoded null-terminated string.
     \param encoded_str Address of encoded null-terminated string "returned" by function.
-    \param settings Encoding settings. For defaults see #AMKD_DEFAULT_CONFIG
+    \param settings Encoding settings. For defaults see #AMKD_CONFIG_DEFAULT
 
     \warning Allocates memory for the encoded string: \a *encoded_str has to be manually freed.
  */
@@ -71,7 +74,7 @@ AMkd_error AMkd_strip_header(char **encoded_str);
 
 /*! \brief Tries to detect encoding in \a encoded_str and writes it into \a *settings.
 
-    For no or unknown encoding, the provided structure becomes equal to #AMKD_NONE_CONFIG
+    For no or unknown encoding, the provided structure becomes equal to #AMKD_CONFIG_NONE
 
     \param encoded_str Encoded null-terminated string.
     \param settings Address of config structure. Must be provided by user.

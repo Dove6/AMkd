@@ -45,13 +45,13 @@ int main(int argc, char **argv)
 
         char *output_string = NULL;
 
-        if (input_encoding.step_count == AMKD_NONE_CONFIG.step_count && input_encoding.letter == AMKD_NONE_CONFIG.letter) {
-            if (AMkd_encode(input_string, &output_string, AMKD_DEFAULT_CONFIG) == AMKD_OUT_OF_MEMORY) {
+        if (input_encoding.step_count == AMKD_CONFIG_NONE.step_count && input_encoding.letter == AMKD_CONFIG_NONE.letter) {
+            if (AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT) == AMKD_ERROR_OUT_OF_MEMORY) {
                 fprintf(stderr, "Not enough memory for encoding string: %s", strerror(errno));
                 exit(EXIT_FAILURE);
             }
         } else {
-            if (AMkd_decode(input_string, &output_string, input_encoding) == AMKD_OUT_OF_MEMORY) {
+            if (AMkd_decode(input_string, &output_string, input_encoding) == AMKD_ERROR_OUT_OF_MEMORY) {
                 fprintf(stderr, "Not enough memory for decoding string: %s", strerror(errno));
                 exit(EXIT_FAILURE);
             }
