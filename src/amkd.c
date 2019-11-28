@@ -4,12 +4,24 @@
 #include <string.h>
 #include "../include/AMkd.h"
 
-static bool AMkd_compare_configs(AMkd_config left, AMkd_config right)
+typedef enum AMkd_config_compare_mode {
+    AMKD_COMPARE_WHOLE,
+    AMKD_COMPARE_STEPS,
+    AMKD_COMPARE_LETTER
+} AMkd_config_compare_mode;
+
+static bool AMkd_compare_configs(AMkd_config left, AMkd_config right, AMkd_config_compare_mode compare_mode)
 {
-    if (left.step_count == right.step_count && left.letter == right.letter) {
-        return true;
-    } else {
-        return false;
+    switch (compare_mode) {
+        case AMKD_COMPARE_LETTER: {
+            return left.letter == right.letter;
+        }
+        case AMKD_COMPARE_STEPS: {
+            return left.step_count == right.step_count;
+        }
+        default: {
+            return left.letter == right.letter && left.step_count == right.step_count;
+        }
     }
 }
 
@@ -37,37 +49,89 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_config input_set
             line_break_count++;
             line_break = strstr(line_break, sought_sequence);
         }
-        return string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence));
+        return string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence))
+            + line_break_count / output_settings.step_count;
     }
 }
 
 AMkd_error AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config settings)
 {
     AMkd_error local_errno = AMKD_ERROR_NONE;
-    {
-        int scanned_steps;
-        char scanned_letter;
-        if (sscanf(encoded_str, "{<%c:%d>}", &scanned_letter, &scanned_steps) == 2) {
-            if (!AMkd_compare_configs(settings, AMKD_CONFIG_NONE)) {
-                local_errno = AMKD_WARNING_SURPLUS_SETTINGS;
-            }
-            settings.step_count = scanned_steps;
-            settings.letter = scanned_letter;
+    if (AMkd_compare_configs(settings, AMKD_CONFIG_NONE, AMKD_COMPARE_STEPS)) {
+        AMkd_config header_settings = AMKD_CONFIG_NONE;
+        AMkd_detect_encoding(encoded_str, &header_settings);
+        if (AMkd_compare_configs(settings, AMKD_CONFIG_NONE, AMKD_COMPARE_STEPS)) {
+            return AMKD_ERROR_MISSING_SETTINGS;
+        }
+        settings = header_settings;
+    } else {
+        AMkd_config header_settings = AMKD_CONFIG_NONE;
+        AMkd_detect_encoding(encoded_str, &header_settings);
+        if (!AMkd_compare_configs(settings, AMKD_CONFIG_NONE, AMKD_COMPARE_STEPS)) {
+            local_errno = AMKD_WARNING_SURPLUS_SETTINGS;
         }
     }
-    for (int i = 1; i <= settings.step_count; i++) {
-        int movement = (i + 1) / 2;
-        if (i % 2 == 1) {
+    unsigned encoded_length = strlen(encoded_str),
+        encoded_index = 0,
+        decoded_index = 0,
+        step = 1,
+        decoded_str_max_size = AMkd_calculate_size(encoded_str, settings, AMKD_CONFIG_NONE);
+    *decoded_str = (char *)malloc((decoded_str_max_size) * sizeof(char));
+    if (decoded_str == NULL) {
+        return AMKD_ERROR_OUT_OF_MEMORY;
+    }
+    {
+        char trash_char;
+        int trash_int;
+        unsigned header_length = 0;
+        if (sscanf(encoded_str, "{<%c:%d>}%n", &trash_char, &trash_int, &header_length) == 2) {
+            encoded_index += header_length;
+        }
+    }
+    while (encoded_index < encoded_length && decoded_index < decoded_str_max_size) {
+        int movement = (step + 1) / 2;
+        if (step % 2 == 1) {
             movement *= -1;
         }
-
+        if (encoded_str[encoded_index] == '\n') {
+            encoded_index++;
+        } else {
+            if (encoded_str[encoded_index] == '<') {
+                bool sequence_completed = false;
+                if (encoded_index + 2 < encoded_length) {
+                    if (encoded_str[encoded_index + 1] == 'E' && encoded_str[encoded_index + 2] == '>') {
+                        sequence_completed = true;
+                    }
+                }
+                if (sequence_completed) {
+                    (*decoded_str)[decoded_index] = '\n';
+                    encoded_index++;
+                } else {
+                    (*decoded_str)[decoded_index] = encoded_str[encoded_index] + movement;
+                    step++;
+                }
+            } else {
+                (*decoded_str)[decoded_index] = encoded_str[encoded_index] + movement;
+                step++;
+            }
+            encoded_index++;
+            decoded_index++;
+            if (step > settings.step_count) {
+                step = 1;
+            }
+        }
     }
     return local_errno;
 }
 
 AMkd_error AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config settings)
 {
-    ;
+    if (AMkd_compare_configs(settings, AMKD_CONFIG_NONE, AMKD_COMPARE_STEPS)) {
+        return AMKD_ERROR_MISSING_SETTINGS;
+    }
+    /*
+        [TODO]
+    */
     return AMKD_ERROR_NONE;
 }
 
@@ -95,7 +159,11 @@ AMkd_error AMkd_detect_encoding(const char *encoded_str, AMkd_config *settings)
         //case 1. header present
         return AMKD_ERROR_NONE;
     } else {
-        //case 2. comparing offsets with "OBJECT=name/nname:TYPE"
+        //case 2. <E> (not) present
+        /*
+            [TODO]
+        */
+        //case 3. comparing offsets with "OBJECT=name/nname:TYPE"
         /*
             [TODO]
         */

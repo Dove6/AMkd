@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="AMkd_group.ico"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">AMkd
-   &#160;<span id="projectnumber">0.3.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
    <div id="projectbrief">CNV codec</div>
   </td>
@@ -219,7 +219,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">encoded_str</td><td>Encoded null-terminated string. </td></tr>
     <tr><td class="paramname">decoded_str</td><td>Address of decoded null-terminated string "returned" by function. </td></tr>
-    <tr><td class="paramname">settings</td><td>Decoding settings. If <em>encoded_str</em> has a header, they are not used. For defaults see <a class="el" href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
+    <tr><td class="paramname">settings</td><td>Decoding settings. They have higher priority than (optional) header of <em>encoded_str</em> (except for 0-step settings). For defaults see <a class="el" href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
   </table>
   </dd>
 </dl>
@@ -367,7 +367,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>No encoding settings. </p>
-<p>Makes string pass without changes. </p>
+<p>Indicates no decoding and cannot be used as standalone decoding/encoding settings. </p>
 
 </div>
 </div>

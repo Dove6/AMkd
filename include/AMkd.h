@@ -27,7 +27,7 @@ typedef enum AMkd_error AMkd_error;
 /*! \brief Structure containing encoding/decoding settings.
  */
 struct AMkd_config {
-    int step_count; //!< Count of encoding steps (essential for correct decoding). The game engine casts this value to unsigned type, but for sanity's sake AMkd library takes its absolute value.
+    int step_count; //!< Count of encoding steps (essential for correct decoding). The game engine casts this value to unsigned type, but for sanity's sake AMkd library takes its absolute value. Value of 0 cannot be used in functions.
     char letter; //!< Not used. Additional parameter provided by Aidem Media for indicating need of decoding script by the game engine.
 };
 /*! \brief Shorthand for AMkd_config structure.
@@ -42,7 +42,7 @@ AMkd_config AMKD_CONFIG_DEFAULT = {6, 'C'};
 
 /*! \brief No encoding settings.
 
-    Makes string pass without changes.
+    Indicates no decoding and cannot be used as standalone decoding/encoding settings.
 */
 AMkd_config AMKD_CONFIG_NONE = {0, 'C'};
 
@@ -51,7 +51,7 @@ AMkd_config AMKD_CONFIG_NONE = {0, 'C'};
 
     \param encoded_str Encoded null-terminated string.
     \param decoded_str Address of decoded null-terminated string "returned" by function.
-    \param settings Decoding settings. If \a encoded_str has a header, they are not used. For defaults see #AMKD_CONFIG_DEFAULT
+    \param settings Decoding settings. They have higher priority than (optional) header of \a encoded_str (except for 0-step settings). For defaults see #AMKD_CONFIG_DEFAULT
 
     \warning Allocates memory for the decoded string: \a *decoded_str has to be manually freed.
  */
