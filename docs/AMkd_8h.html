@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="AMkd_group.ico"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">AMkd
-   &#160;<span id="projectnumber">0.2.0</span>
+   &#160;<span id="projectnumber">0.3.0</span>
    </div>
    <div id="projectbrief">CNV codec</div>
   </td>
@@ -105,11 +105,12 @@ typedef struct <a class="el" href="structAMkd__config.html">AMkd_config</a>&#160
 Enumerations</h2></td></tr>
 <tr class="memitem:aac2cdaac1c5b20bc74ccb35485e5a564"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a> { <br />
 &#160;&#160;<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564ac78c5f6ff4cdd024b7154a7bc16b5f7d">AMKD_ERROR_NONE</a> = 0, 
-<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564abbcb5425db82c6b3bd0ff3d073dc0535">AMKD_WARNING_SURPLUS_SETTINGS</a> = -255, 
+<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564abbcb5425db82c6b3bd0ff3d073dc0535">AMKD_WARNING_SURPLUS_SETTINGS</a> = -128, 
 <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a3fe61c8e93069d65d329624a49915c10">AMKD_WARNING_MISSING_HEADER</a>, 
 <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564ae6e436657cd99d005d4c3861501c462f">AMKD_WARNING_CONTROL_CHARS</a>, 
 <br />
-&#160;&#160;<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564ae8bcda4fd318e40ec40f15cb1967ce2a">AMKD_ERROR_MISSING_SETTINGS</a> = 1, 
+&#160;&#160;<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a2533090ce71c897c08cce3ed25672892">AMKD_WARNING_UNKNOWN_ENCODING</a>, 
+<a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564ae8bcda4fd318e40ec40f15cb1967ce2a">AMKD_ERROR_MISSING_SETTINGS</a> = 1, 
 <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a16dcc23a8c3c2081cd236cf9c1c907d0">AMKD_ERROR_OUT_OF_MEMORY</a>
 <br />
  }</td></tr>
@@ -124,9 +125,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa2300276c1f678c206831d1e37013f2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f">AMkd_encode</a> (const char *decoded_str, char **encoded_str, <a class="el" href="structAMkd__config.html">AMkd_config</a> settings)</td></tr>
 <tr class="memdesc:aa2300276c1f678c206831d1e37013f2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes <em>decoded_str</em> and places it at <em>*encoded_str</em>.  <a href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f">More...</a><br /></td></tr>
 <tr class="separator:aa2300276c1f678c206831d1e37013f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b2ffab7df81a26afe242ffbf1838dea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a9b2ffab7df81a26afe242ffbf1838dea">AMkd_strip_header</a> (char **encoded_str)</td></tr>
-<tr class="memdesc:a9b2ffab7df81a26afe242ffbf1838dea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strips header from <em>*encoded_str</em> (if present).  <a href="AMkd_8h.html#a9b2ffab7df81a26afe242ffbf1838dea">More...</a><br /></td></tr>
-<tr class="separator:a9b2ffab7df81a26afe242ffbf1838dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bf740f086c3776783023f3d2ca40bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a4bf740f086c3776783023f3d2ca40bea">AMkd_strip_header</a> (char *encoded_str)</td></tr>
+<tr class="memdesc:a4bf740f086c3776783023f3d2ca40bea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strips header from <em>*encoded_str</em> (if present).  <a href="AMkd_8h.html#a4bf740f086c3776783023f3d2ca40bea">More...</a><br /></td></tr>
+<tr class="separator:a4bf740f086c3776783023f3d2ca40bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33db0504636c3c71f93f4192d441d246"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a33db0504636c3c71f93f4192d441d246">AMkd_detect_encoding</a> (const char *encoded_str, <a class="el" href="structAMkd__config.html">AMkd_config</a> *settings)</td></tr>
 <tr class="memdesc:a33db0504636c3c71f93f4192d441d246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to detect encoding in <em>encoded_str</em> and writes it into <em>*settings</em>.  <a href="AMkd_8h.html#a33db0504636c3c71f93f4192d441d246">More...</a><br /></td></tr>
 <tr class="separator:a33db0504636c3c71f93f4192d441d246"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,9 +166,12 @@ Variables</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#ac9e9634d274575fce942d507a755feb2" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> </dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="aac2cdaac1c5b20bc74ccb35485e5a564a3fe61c8e93069d65d329624a49915c10"></a>AMKD_WARNING_MISSING_HEADER&#160;</td><td class="fielddoc"><p>Warning: no header to strip. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#a9b2ffab7df81a26afe242ffbf1838dea" title="Strips header from *encoded_str (if present).">AMkd_strip_header</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#a4bf740f086c3776783023f3d2ca40bea" title="Strips header from *encoded_str (if present).">AMkd_strip_header</a> </dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="aac2cdaac1c5b20bc74ccb35485e5a564ae6e436657cd99d005d4c3861501c462f"></a>AMKD_WARNING_CONTROL_CHARS&#160;</td><td class="fielddoc"><p>Warning: control characters present in decoded string (may suggest incorrect decoding) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aac2cdaac1c5b20bc74ccb35485e5a564a2533090ce71c897c08cce3ed25672892"></a>AMKD_WARNING_UNKNOWN_ENCODING&#160;</td><td class="fielddoc"><p>Warning: encoding impossible to detect. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#a33db0504636c3c71f93f4192d441d246" title="Tries to detect encoding in encoded_str and writes it into *settings.">AMkd_detect_encoding</a> </dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="aac2cdaac1c5b20bc74ccb35485e5a564ae8bcda4fd318e40ec40f15cb1967ce2a"></a>AMKD_ERROR_MISSING_SETTINGS&#160;</td><td class="fielddoc"><p>Error: no settings provided for encoding/decoding. </p>
 </td></tr>
@@ -250,7 +254,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tries to detect encoding in <em>encoded_str</em> and writes it into <em>*settings</em>. </p>
-<p>For no or unknown encoding, the provided structure becomes equal to <a class="el" href="AMkd_8h.html#ad763a6992dd287abd8ab94710d8b5b1c" title="No encoding settings.">AMKD_CONFIG_NONE</a></p>
+<p>For no or unknown encoding, the provided structure becomes equal to <a class="el" href="AMkd_8h.html#ad763a6992dd287abd8ab94710d8b5b1c" title="No encoding settings.">AMKD_CONFIG_NONE</a> Also, unknown encoding is indicated by <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a2533090ce71c897c08cce3ed25672892" title="Warning: encoding impossible to detect.">AMKD_WARNING_UNKNOWN_ENCODING</a> return code.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">encoded_str</td><td>Encoded null-terminated string. </td></tr>
@@ -306,8 +310,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a9b2ffab7df81a26afe242ffbf1838dea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b2ffab7df81a26afe242ffbf1838dea">&#9670;&nbsp;</a></span>AMkd_strip_header()</h2>
+<a id="a4bf740f086c3776783023f3d2ca40bea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bf740f086c3776783023f3d2ca40bea">&#9670;&nbsp;</a></span>AMkd_strip_header()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -315,7 +319,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a> AMkd_strip_header </td>
           <td>(</td>
-          <td class="paramtype">char **&#160;</td>
+          <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>encoded_str</em></td><td>)</td>
           <td></td>
         </tr>

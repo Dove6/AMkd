@@ -12,9 +12,10 @@
  */
 enum AMkd_error {
     AMKD_ERROR_NONE = 0, //!< No error
-    AMKD_WARNING_SURPLUS_SETTINGS = -255, //!< Warning: decoding settings present in encoded string and additionally provided by user; settings from string are used \sa AMkd_decode
+    AMKD_WARNING_SURPLUS_SETTINGS = -128, //!< Warning: decoding settings present in encoded string and additionally provided by user; settings from string are used \sa AMkd_decode
     AMKD_WARNING_MISSING_HEADER, //!< Warning: no header to strip \sa AMkd_strip_header
     AMKD_WARNING_CONTROL_CHARS, //!< Warning: control characters present in decoded string (may suggest incorrect decoding)
+    AMKD_WARNING_UNKNOWN_ENCODING, //!< Warning: encoding impossible to detect \sa AMkd_detect_encoding
     AMKD_ERROR_MISSING_SETTINGS = 1, //!< Error: no settings provided for encoding/decoding
     AMKD_ERROR_OUT_OF_MEMORY //!< Error: no memory available for allocation for output string
 };
@@ -26,8 +27,8 @@ typedef enum AMkd_error AMkd_error;
 /*! \brief Structure containing encoding/decoding settings.
  */
 struct AMkd_config {
-    int step_count; //!< Count of encoding steps (essential for correct decoding)
-    char letter; //!< Not used; additional parameter provided by Aidem Media for indicating need of decoding script by the game engine
+    int step_count; //!< Count of encoding steps (essential for correct decoding). The game engine casts this value to unsigned type, but for sanity's sake AMkd library takes its absolute value.
+    char letter; //!< Not used. Additional parameter provided by Aidem Media for indicating need of decoding script by the game engine.
 };
 /*! \brief Shorthand for AMkd_config structure.
  */
@@ -70,11 +71,12 @@ AMkd_error AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config 
 
     \param encoded_str Address of encoded null-terminated string.
  */
-AMkd_error AMkd_strip_header(char **encoded_str);
+AMkd_error AMkd_strip_header(char *encoded_str);
 
 /*! \brief Tries to detect encoding in \a encoded_str and writes it into \a *settings.
 
     For no or unknown encoding, the provided structure becomes equal to #AMKD_CONFIG_NONE
+    Also, unknown encoding is indicated by #AMKD_WARNING_UNKNOWN_ENCODING return code.
 
     \param encoded_str Encoded null-terminated string.
     \param settings Address of config structure. Must be provided by user.

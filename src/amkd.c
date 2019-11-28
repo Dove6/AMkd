@@ -16,10 +16,28 @@ static bool AMkd_compare_configs(AMkd_config left, AMkd_config right)
 static unsigned AMkd_calculate_size(const char *input_str, AMkd_config input_settings, AMkd_config output_settings)
 {
     unsigned string_length = strlen(input_str) + 1;
-    if (input_settings.step_count != 0 && input_settings.step_count != 0) {
+    if (input_settings.step_count == output_settings.step_count) {
         return string_length;
     } else if (input_settings.step_count == 0) {
-        ;
+        const char *sought_sequence = "<E>";
+        const char *replace_sequence = "\n";
+        int line_break_count = 0;
+        const char *line_break = strstr(input_str, sought_sequence);
+        while (line_break != NULL) {
+            line_break_count++;
+            line_break = strstr(line_break, sought_sequence);
+        }
+        return string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence));
+    } else {
+        const char *sought_sequence = "\n";
+        const char *replace_sequence = "<E>";
+        int line_break_count = 0;
+        const char *line_break = strstr(input_str, sought_sequence);
+        while (line_break != NULL) {
+            line_break_count++;
+            line_break = strstr(line_break, sought_sequence);
+        }
+        return string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence));
     }
 }
 
@@ -29,7 +47,7 @@ AMkd_error AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config 
     {
         int scanned_steps;
         char scanned_letter;
-        if (sscanf(encoded_str, "{<%c:%d>}", &scanned_steps, &scanned_letter) == 2) {
+        if (sscanf(encoded_str, "{<%c:%d>}", &scanned_letter, &scanned_steps) == 2) {
             if (!AMkd_compare_configs(settings, AMKD_CONFIG_NONE)) {
                 local_errno = AMKD_WARNING_SURPLUS_SETTINGS;
             }
@@ -73,6 +91,14 @@ AMkd_error AMkd_strip_header(char *encoded_str)
 
 AMkd_error AMkd_detect_encoding(const char *encoded_str, AMkd_config *settings)
 {
-    ;
-    return AMKD_ERROR_NONE;
+    if (sscanf(encoded_str, "{<%c:%d>}", &(settings->letter), &(settings->step_count)) == 2) {
+        //case 1. header present
+        return AMKD_ERROR_NONE;
+    } else {
+        //case 2. comparing offsets with "OBJECT=name/nname:TYPE"
+        /*
+            [TODO]
+        */
+        return AMKD_WARNING_UNKNOWN_ENCODING;
+    }
 }
