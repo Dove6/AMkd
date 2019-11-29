@@ -38,13 +38,13 @@ typedef struct AMkd_config AMkd_config;
 
     Will work for any script taken from AM's games.
 */
-AMkd_config AMKD_CONFIG_DEFAULT = {6, 'C'};
+const AMkd_config AMKD_CONFIG_DEFAULT;
 
 /*! \brief No encoding settings.
 
     Indicates no decoding and cannot be used as standalone decoding/encoding settings.
 */
-AMkd_config AMKD_CONFIG_NONE = {0, 'C'};
+const AMkd_config AMKD_CONFIG_NONE;
 
 
 /*! \brief Decodes \a encoded_str and places it at \a *decoded_str.

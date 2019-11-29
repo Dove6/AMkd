@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="AMkd_group.ico"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">AMkd
-   &#160;<span id="projectnumber">0.4.0</span>
+   &#160;<span id="projectnumber">0.5.0</span>
    </div>
    <div id="projectbrief">CNV codec</div>
   </td>
@@ -134,12 +134,12 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aa9f3a2f498364667204262dbaba7b66b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structAMkd__config.html">AMkd_config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b">AMKD_CONFIG_DEFAULT</a> = {6, 'C'}</td></tr>
-<tr class="memdesc:aa9f3a2f498364667204262dbaba7b66b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default encoding/decoding settings.  <a href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b">More...</a><br /></td></tr>
-<tr class="separator:aa9f3a2f498364667204262dbaba7b66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad763a6992dd287abd8ab94710d8b5b1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structAMkd__config.html">AMkd_config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#ad763a6992dd287abd8ab94710d8b5b1c">AMKD_CONFIG_NONE</a> = {0, 'C'}</td></tr>
-<tr class="memdesc:ad763a6992dd287abd8ab94710d8b5b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">No encoding settings.  <a href="AMkd_8h.html#ad763a6992dd287abd8ab94710d8b5b1c">More...</a><br /></td></tr>
-<tr class="separator:ad763a6992dd287abd8ab94710d8b5b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5330ab68322cf515ad63f88f8112b8d2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structAMkd__config.html">AMkd_config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2">AMKD_CONFIG_DEFAULT</a></td></tr>
+<tr class="memdesc:a5330ab68322cf515ad63f88f8112b8d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default encoding/decoding settings.  <a href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2">More...</a><br /></td></tr>
+<tr class="separator:a5330ab68322cf515ad63f88f8112b8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac734f266be9849d0654bdbe22a472665"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structAMkd__config.html">AMkd_config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#ac734f266be9849d0654bdbe22a472665">AMKD_CONFIG_NONE</a></td></tr>
+<tr class="memdesc:ac734f266be9849d0654bdbe22a472665"><td class="mdescLeft">&#160;</td><td class="mdescRight">No encoding settings.  <a href="AMkd_8h.html#ac734f266be9849d0654bdbe22a472665">More...</a><br /></td></tr>
+<tr class="separator:ac734f266be9849d0654bdbe22a472665"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>AMkd library header file. </p>
@@ -219,7 +219,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">encoded_str</td><td>Encoded null-terminated string. </td></tr>
     <tr><td class="paramname">decoded_str</td><td>Address of decoded null-terminated string "returned" by function. </td></tr>
-    <tr><td class="paramname">settings</td><td>Decoding settings. They have higher priority than (optional) header of <em>encoded_str</em> (except for 0-step settings). For defaults see <a class="el" href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
+    <tr><td class="paramname">settings</td><td>Decoding settings. They have higher priority than (optional) header of <em>encoded_str</em> (except for 0-step settings). For defaults see <a class="el" href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
   </table>
   </dd>
 </dl>
@@ -254,7 +254,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tries to detect encoding in <em>encoded_str</em> and writes it into <em>*settings</em>. </p>
-<p>For no or unknown encoding, the provided structure becomes equal to <a class="el" href="AMkd_8h.html#ad763a6992dd287abd8ab94710d8b5b1c" title="No encoding settings.">AMKD_CONFIG_NONE</a> Also, unknown encoding is indicated by <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a2533090ce71c897c08cce3ed25672892" title="Warning: encoding impossible to detect.">AMKD_WARNING_UNKNOWN_ENCODING</a> return code.</p>
+<p>For no or unknown encoding, the provided structure becomes equal to <a class="el" href="AMkd_8h.html#ac734f266be9849d0654bdbe22a472665" title="No encoding settings.">AMKD_CONFIG_NONE</a> Also, unknown encoding is indicated by <a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564a2533090ce71c897c08cce3ed25672892" title="Warning: encoding impossible to detect.">AMKD_WARNING_UNKNOWN_ENCODING</a> return code.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">encoded_str</td><td>Encoded null-terminated string. </td></tr>
@@ -302,7 +302,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">decoded_str</td><td>Decoded null-terminated string. </td></tr>
     <tr><td class="paramname">encoded_str</td><td>Address of encoded null-terminated string "returned" by function. </td></tr>
-    <tr><td class="paramname">settings</td><td>Encoding settings. For defaults see <a class="el" href="AMkd_8h.html#aa9f3a2f498364667204262dbaba7b66b" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
+    <tr><td class="paramname">settings</td><td>Encoding settings. For defaults see <a class="el" href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2" title="Default encoding/decoding settings.">AMKD_CONFIG_DEFAULT</a></td></tr>
   </table>
   </dd>
 </dl>
@@ -337,14 +337,14 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="aa9f3a2f498364667204262dbaba7b66b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9f3a2f498364667204262dbaba7b66b">&#9670;&nbsp;</a></span>AMKD_CONFIG_DEFAULT</h2>
+<a id="a5330ab68322cf515ad63f88f8112b8d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5330ab68322cf515ad63f88f8112b8d2">&#9670;&nbsp;</a></span>AMKD_CONFIG_DEFAULT</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structAMkd__config.html">AMkd_config</a> AMKD_CONFIG_DEFAULT = {6, 'C'}</td>
+          <td class="memname">const <a class="el" href="structAMkd__config.html">AMkd_config</a> AMKD_CONFIG_DEFAULT</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -354,14 +354,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ad763a6992dd287abd8ab94710d8b5b1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad763a6992dd287abd8ab94710d8b5b1c">&#9670;&nbsp;</a></span>AMKD_CONFIG_NONE</h2>
+<a id="ac734f266be9849d0654bdbe22a472665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac734f266be9849d0654bdbe22a472665">&#9670;&nbsp;</a></span>AMKD_CONFIG_NONE</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structAMkd__config.html">AMkd_config</a> AMKD_CONFIG_NONE = {0, 'C'}</td>
+          <td class="memname">const <a class="el" href="structAMkd__config.html">AMkd_config</a> AMKD_CONFIG_NONE</td>
         </tr>
       </table>
 </div><div class="memdoc">
