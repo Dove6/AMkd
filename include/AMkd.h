@@ -67,6 +67,14 @@ AMkd_error AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config 
  */
 AMkd_error AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config settings);
 
+/*! \brief Releases memory allocated by #AMkd_decode or #AMkd_encode.
+
+    Provided to obviate ambiguity concerning deallocation method.
+
+    \param result_str Decoded or encoded string "returned" by #AMkd_decode or #AMkd_encode.
+ */
+void AMkd_deallocate_result(char *result_str);
+
 /*! \brief Strips header from \a *encoded_str (if present).
 
     \param encoded_str Address of encoded null-terminated string.

@@ -125,6 +125,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa2300276c1f678c206831d1e37013f2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f">AMkd_encode</a> (const char *decoded_str, char **encoded_str, <a class="el" href="structAMkd__config.html">AMkd_config</a> settings)</td></tr>
 <tr class="memdesc:aa2300276c1f678c206831d1e37013f2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes <em>decoded_str</em> and places it at <em>*encoded_str</em>.  <a href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f">More...</a><br /></td></tr>
 <tr class="separator:aa2300276c1f678c206831d1e37013f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834ce56f787f9b7d38b9dcfdda3b8ce3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a834ce56f787f9b7d38b9dcfdda3b8ce3">AMkd_deallocate_result</a> (char *result_str)</td></tr>
+<tr class="memdesc:a834ce56f787f9b7d38b9dcfdda3b8ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases memory allocated by <a class="el" href="AMkd_8h.html#ac9e9634d274575fce942d507a755feb2" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> or <a class="el" href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f" title="Encodes decoded_str and places it at *encoded_str.">AMkd_encode</a>.  <a href="AMkd_8h.html#a834ce56f787f9b7d38b9dcfdda3b8ce3">More...</a><br /></td></tr>
+<tr class="separator:a834ce56f787f9b7d38b9dcfdda3b8ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bf740f086c3776783023f3d2ca40bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#aac2cdaac1c5b20bc74ccb35485e5a564">AMkd_error</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a4bf740f086c3776783023f3d2ca40bea">AMkd_strip_header</a> (char *encoded_str)</td></tr>
 <tr class="memdesc:a4bf740f086c3776783023f3d2ca40bea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strips header from <em>*encoded_str</em> (if present).  <a href="AMkd_8h.html#a4bf740f086c3776783023f3d2ca40bea">More...</a><br /></td></tr>
 <tr class="separator:a4bf740f086c3776783023f3d2ca40bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,6 +185,33 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a834ce56f787f9b7d38b9dcfdda3b8ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834ce56f787f9b7d38b9dcfdda3b8ce3">&#9670;&nbsp;</a></span>AMkd_deallocate_result()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMkd_deallocate_result </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>result_str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases memory allocated by <a class="el" href="AMkd_8h.html#ac9e9634d274575fce942d507a755feb2" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> or <a class="el" href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f" title="Encodes decoded_str and places it at *encoded_str.">AMkd_encode</a>. </p>
+<p>Provided to obviate ambiguity concerning deallocation method.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result_str</td><td>Decoded or encoded string "returned" by <a class="el" href="AMkd_8h.html#ac9e9634d274575fce942d507a755feb2" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> or <a class="el" href="AMkd_8h.html#aa2300276c1f678c206831d1e37013f2f" title="Encodes decoded_str and places it at *encoded_str.">AMkd_encode</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ac9e9634d274575fce942d507a755feb2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9e9634d274575fce942d507a755feb2">&#9670;&nbsp;</a></span>AMkd_decode()</h2>
 
