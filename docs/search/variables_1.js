@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['letter_29',['letter',['../structAMkd__config.html#a32c2fcacda2a7c34c0d88d647d40600d',1,'AMkd_config']]]
+  ['error_5fcode_41',['error_code',['../structAMkd__error__info.html#af610f4afe29b00604523ebc6cd90a37e',1,'AMkd_error_info']]]
 ];

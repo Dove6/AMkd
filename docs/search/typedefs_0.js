@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['amkd_5fconfig_31',['AMkd_config',['../AMkd_8h.html#a5d82d4841948c96d2aeb22405d42876d',1,'AMkd.h']]],
-  ['amkd_5ferror_32',['AMkd_error',['../AMkd_8h.html#a6f767193fd486a1834df69eeb4df5458',1,'AMkd.h']]]
+  ['amkd_5fconfig_45',['AMkd_config',['../AMkd_8h.html#a5d82d4841948c96d2aeb22405d42876d',1,'AMkd.h']]],
+  ['amkd_5ferror_5fcode_46',['AMkd_error_code',['../AMkd_8h.html#abc6f809206fb2e5f5f9060e34b124a41',1,'AMkd.h']]],
+  ['amkd_5ferror_5findicator_47',['AMkd_error_indicator',['../AMkd_8h.html#ad95176728cd0fed87f379299e4e483cc',1,'AMkd.h']]],
+  ['amkd_5ferror_5finfo_48',['AMkd_error_info',['../AMkd_8h.html#ad455c1c94f4f1b725577257f17f6cc49',1,'AMkd.h']]],
+  ['amkd_5fwarning_5fflags_49',['AMkd_warning_flags',['../AMkd_8h.html#a9029af8608ac3e2b365ac80acb3944fe',1,'AMkd.h']]]
 ];

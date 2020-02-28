@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['step_5fcount_30',['step_count',['../structAMkd__config.html#a78fa24c2f04699bc8f8370d962f049f1',1,'AMkd_config']]]
+  ['letter_42',['letter',['../structAMkd__config.html#a32c2fcacda2a7c34c0d88d647d40600d',1,'AMkd_config']]]
 ];
