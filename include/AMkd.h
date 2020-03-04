@@ -36,7 +36,8 @@ enum AMkd_warning_flags {
     AMKD_WARNING_SURPLUS_SETTINGS = 0x1, //!< Warning: decoding settings present in encoded string and additionally provided by user; settings from string are used. \sa AMkd_decode
     AMKD_WARNING_MISSING_HEADER = 0x2, //!< Warning: no header to strip. \sa AMkd_strip_header
     AMKD_WARNING_CONTROL_CHARS = 0x4, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
-    AMKD_WARNING_UNKNOWN_ENCODING = 0x8 //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
+    AMKD_WARNING_UNKNOWN_ENCODING = 0x8, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
+    AMKD_WARNING_UNKNOWN_LINE_ENDING = 0x10 //!< Warning: data occupies one line or has unexpected line endings (other than CRLF, LF or CR), which might in result be translated incorrectly.
 };
 /*! \brief Shorthand for #AMkd_warning_flags enumeration.
  */
@@ -152,3 +153,19 @@ AMkd_error_indicator AMkd_strip_header(char *encoded_str, AMkd_error_info *error
     \todo Add more checks for better detection.
  */
 AMkd_error_indicator AMkd_detect_encoding(const char *encoded_str, AMkd_config *settings, AMkd_error_info *error_info);
+
+/*! \brief Translates given AMkd_error_code into human readable string.
+
+    \param code Error code, for which the translation is requested.
+
+    \return Error string associated with the given code.
+ */
+const char *AMkd_get_error_string(AMkd_error_code code);
+
+/*! \brief Translates the first flag from AMkd_warning_flags (counting from the least significant bit) into human readable string.
+
+    \param flags Binary flag register containing warning data. There should be only one flag set as the function returns only one string.
+
+    \return Warning string associated with the least significant flag.
+ */
+const char *AMkd_get_warning_string(AMkd_warning_flags flags);

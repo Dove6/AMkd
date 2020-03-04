@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Could not rewind \"%s\": %s", argv[1], strerror(errno));
         exit(EXIT_FAILURE);
     }
-    char *input_string = (char *)malloc(sizeof(char) * input_length);
+    char *input_string = (char *)malloc(sizeof(char) * (input_length + 1));
     if (input_string == NULL) {
         fprintf(stderr, "Could not allocate memory for input string: %s", strerror(errno));
         exit(EXIT_FAILURE);
@@ -40,6 +40,7 @@ int main(int argc, char **argv)
         free(input_string);
         exit(EXIT_FAILURE);
     }
+    input_string[input_length] = '\0';
     if (fclose(input_file) == EOF) {
         fprintf(stderr, "Could not close \"%s\": %s", argv[1], strerror(errno));
         errno = 0;
@@ -59,24 +60,30 @@ int main(int argc, char **argv)
 
     if (input_encoding.step_count == AMKD_CONFIG_NONE.step_count) {
         if (AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT, &error_info) == AMKD_FAILURE) {
-            if (error_info.error_code == AMKD_ERROR_OUT_OF_MEMORY) {
-                fprintf(stderr, "Not enough memory for encoding string: %s", strerror(errno));
-            } else if (error_info.error_code == AMKD_ERROR_MISSING_INPUT) {
-                fprintf(stderr, "Expected input string, but got NULL.\n");
-            } else if (error_info.error_code == AMKD_ERROR_INSUFFICIENT_BUFFER) {
-                fprintf(stderr, "Incorrect size of internal output buffer.\n");
+            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(error_info.error_code));
+            fprintf(stderr, "errno state: %s\n", strerror(errno));
+            if (error_info.warning_flags != AMKD_WARNING_NONE) {
+                fprintf(stderr, "Warnings:\n");
+                for (unsigned position = 0; position < 16; position++) {
+                    if ((error_info.warning_flags & (1 << position)) != 0) {
+                        fprintf(stderr, "  %s\n", AMkd_get_warning_string(1 << position));
+                    }
+                }
             }
             free(input_string);
             exit(EXIT_FAILURE);
         }
     } else {
         if (AMkd_decode(input_string, &output_string, input_encoding, &error_info) == AMKD_FAILURE) {
-            if (error_info.error_code == AMKD_ERROR_OUT_OF_MEMORY) {
-                fprintf(stderr, "Not enough memory for encoding string: %s", strerror(errno));
-            } else if (error_info.error_code == AMKD_ERROR_MISSING_INPUT) {
-                fprintf(stderr, "Expected input string, but got NULL.\n");
-            } else if (error_info.error_code == AMKD_ERROR_INSUFFICIENT_BUFFER) {
-                fprintf(stderr, "Incorrect size of internal output buffer.\n");
+            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(error_info.error_code));
+            fprintf(stderr, "errno state: %s\n", strerror(errno));
+            if (error_info.warning_flags != AMKD_WARNING_NONE) {
+                fprintf(stderr, "Warnings:\n");
+                for (unsigned position = 0; position < 16; position++) {
+                    if ((error_info.warning_flags & (1 << position)) != 0) {
+                        fprintf(stderr, "  %s\n", AMkd_get_warning_string(1 << position));
+                    }
+                }
             }
             free(input_string);
             exit(EXIT_FAILURE);

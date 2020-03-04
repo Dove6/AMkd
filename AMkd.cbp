@@ -15,6 +15,7 @@
 				<Option parameters="-k D.cnv r.cnv a.cnv" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DDEBUG" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
