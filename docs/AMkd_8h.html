@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="AMkd_group.ico"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">AMkd
-   &#160;<span id="projectnumber">0.7.0</span>
+   &#160;<span id="projectnumber">0.8.0</span>
    </div>
    <div id="projectbrief">CNV codec</div>
   </td>
@@ -135,7 +135,8 @@ Enumerations</h2></td></tr>
 <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a3fe61c8e93069d65d329624a49915c10">AMKD_WARNING_MISSING_HEADER</a> = 0x2, 
 <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6e436657cd99d005d4c3861501c462f">AMKD_WARNING_CONTROL_CHARS</a> = 0x4, 
 <br />
-&#160;&#160;<a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892">AMKD_WARNING_UNKNOWN_ENCODING</a> = 0x8
+&#160;&#160;<a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892">AMKD_WARNING_UNKNOWN_ENCODING</a> = 0x8, 
+<a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a95587d7412be6235b1f514cfd3ddb3bc">AMKD_WARNING_UNKNOWN_LINE_ENDING</a> = 0x10
 <br />
  }</td></tr>
 <tr class="memdesc:aad9631d66338e7c10fc8b1315cac48b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binary warning flags set in <a class="el" href="structAMkd__error__info.html" title="Structure containing data about function execution: encountered errors and warnings.">AMkd_error_info</a> structures.  <a href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9">More...</a><br /></td></tr>
@@ -163,6 +164,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a4bfe9dd24d00124d4050695b82872857"><td class="memItemLeft" align="right" valign="top"><a class="el" href="AMkd_8h.html#a30daa9b29113f29ac63c8647564569b0">AMkd_error_indicator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a4bfe9dd24d00124d4050695b82872857">AMkd_detect_encoding</a> (const char *encoded_str, <a class="el" href="structAMkd__config.html">AMkd_config</a> *settings, <a class="el" href="structAMkd__error__info.html">AMkd_error_info</a> *error_info)</td></tr>
 <tr class="memdesc:a4bfe9dd24d00124d4050695b82872857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to detect encoding in <em>encoded_str</em> and writes it into <em>*settings</em>.  <a href="AMkd_8h.html#a4bfe9dd24d00124d4050695b82872857">More...</a><br /></td></tr>
 <tr class="separator:a4bfe9dd24d00124d4050695b82872857"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44721c807634f044008be0a6e9c7f4bf"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a44721c807634f044008be0a6e9c7f4bf">AMkd_get_error_string</a> (<a class="el" href="AMkd_8h.html#a005c469eceb5f95b7580fdb80cb76c0b">AMkd_error_code</a> code)</td></tr>
+<tr class="memdesc:a44721c807634f044008be0a6e9c7f4bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translates given AMkd_error_code into human readable string.  <a href="AMkd_8h.html#a44721c807634f044008be0a6e9c7f4bf">More...</a><br /></td></tr>
+<tr class="separator:a44721c807634f044008be0a6e9c7f4bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed9df80da330aa31af51cad8018fbca"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#a4ed9df80da330aa31af51cad8018fbca">AMkd_get_warning_string</a> (<a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9">AMkd_warning_flags</a> flags)</td></tr>
+<tr class="memdesc:a4ed9df80da330aa31af51cad8018fbca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translates the first flag from AMkd_warning_flags (counting from the least significant bit) into human readable string.  <a href="AMkd_8h.html#a4ed9df80da330aa31af51cad8018fbca">More...</a><br /></td></tr>
+<tr class="separator:a4ed9df80da330aa31af51cad8018fbca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -264,6 +271,8 @@ Flags are to be set by OR-ing previous state of variable with new warning and to
 </td></tr>
 <tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892"></a>AMKD_WARNING_UNKNOWN_ENCODING&#160;</td><td class="fielddoc"><p>Warning: encoding impossible to detect. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#a4bfe9dd24d00124d4050695b82872857" title="Tries to detect encoding in encoded_str and writes it into *settings.">AMkd_detect_encoding</a> </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9a95587d7412be6235b1f514cfd3ddb3bc"></a>AMKD_WARNING_UNKNOWN_LINE_ENDING&#160;</td><td class="fielddoc"><p>Warning: data occupies one line or has unexpected line endings (other than CRLF, LF or CR), which might in result be translated incorrectly. </p>
 </td></tr>
 </table>
 
@@ -450,6 +459,60 @@ Also, unknown encoding is indicated by <a class="el" href="AMkd_8h.html#aad9631d
 <dl class="section return"><dt>Returns</dt><dd>Successful execution indicator.</dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Allocates memory for the encoded string: <em>*encoded_str</em> has to be manually freed after successful function execution. On failure, function is guaranteed to clean up before returning. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#a834ce56f787f9b7d38b9dcfdda3b8ce3" title="Releases memory allocated by AMkd_decode or AMkd_encode.">AMkd_deallocate_result</a> </dd></dl>
+
+</div>
+</div>
+<a id="a44721c807634f044008be0a6e9c7f4bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44721c807634f044008be0a6e9c7f4bf">&#9670;&nbsp;</a></span>AMkd_get_error_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* AMkd_get_error_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="AMkd_8h.html#a005c469eceb5f95b7580fdb80cb76c0b">AMkd_error_code</a>&#160;</td>
+          <td class="paramname"><em>code</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Translates given AMkd_error_code into human readable string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">code</td><td>Error code, for which the translation is requested.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error string associated with the given code. </dd></dl>
+
+</div>
+</div>
+<a id="a4ed9df80da330aa31af51cad8018fbca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ed9df80da330aa31af51cad8018fbca">&#9670;&nbsp;</a></span>AMkd_get_warning_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* AMkd_get_warning_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9">AMkd_warning_flags</a>&#160;</td>
+          <td class="paramname"><em>flags</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Translates the first flag from AMkd_warning_flags (counting from the least significant bit) into human readable string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">flags</td><td>Binary flag register containing warning data. There should be only one flag set as the function returns only one string.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Warning string associated with the least significant flag. </dd></dl>
 
 </div>
 </div>
