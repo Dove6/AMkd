@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -46,11 +47,12 @@ int main(int argc, char **argv)
         errno = 0;
     }
 
-    AMkd_error_info error_info;
-    AMkd_config input_encoding;
-    if (AMkd_detect_encoding(input_string, &input_encoding, &error_info) == AMKD_FAILURE) {
+    AMkd_warning_flags warning_flags;
+    AMkd_cycle_param input_encoding;
+    AMkd_error_code return_code;
+    if ((return_code = AMkd_detect_encoding(input_string, &input_encoding, &warning_flags)) != AMKD_ERROR_NONE) {
         free(input_string);
-        if (error_info.error_code == AMKD_ERROR_MISSING_INPUT) {
+        if (return_code == AMKD_ERROR_MISSING_INPUT) {
             fprintf(stderr, "Expected input string, but got NULL.\n");
         }
         exit(EXIT_FAILURE);
@@ -58,14 +60,14 @@ int main(int argc, char **argv)
 
     char *output_string = NULL;
 
-    if (input_encoding.step_count == AMKD_CONFIG_NONE.step_count) {
-        if (AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT, &error_info) == AMKD_FAILURE) {
-            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(error_info.error_code));
+    if (input_encoding == AMKD_CONFIG_NONE) {
+        if ((return_code = AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT, &warning_flags)) != AMKD_ERROR_NONE) {
+            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(return_code));
             fprintf(stderr, "errno state: %s\n", strerror(errno));
-            if (error_info.warning_flags != AMKD_WARNING_NONE) {
+            if (warning_flags != AMKD_WARNING_NONE) {
                 fprintf(stderr, "Warnings:\n");
                 for (unsigned position = 0; position < 16; position++) {
-                    if ((error_info.warning_flags & (1 << position)) != 0) {
+                    if ((warning_flags & (1 << position)) != 0) {
                         fprintf(stderr, "  %s\n", AMkd_get_warning_string(1 << position));
                     }
                 }
@@ -74,13 +76,13 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
     } else {
-        if (AMkd_decode(input_string, &output_string, input_encoding, &error_info) == AMKD_FAILURE) {
-            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(error_info.error_code));
+        if ((return_code = AMkd_decode(input_string, &output_string, input_encoding, &warning_flags)) != AMKD_ERROR_NONE) {
+            fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(return_code));
             fprintf(stderr, "errno state: %s\n", strerror(errno));
-            if (error_info.warning_flags != AMKD_WARNING_NONE) {
+            if (warning_flags != AMKD_WARNING_NONE) {
                 fprintf(stderr, "Warnings:\n");
                 for (unsigned position = 0; position < 16; position++) {
-                    if ((error_info.warning_flags & (1 << position)) != 0) {
+                    if ((warning_flags & (1 << position)) != 0) {
                         fprintf(stderr, "  %s\n", AMkd_get_warning_string(1 << position));
                     }
                 }

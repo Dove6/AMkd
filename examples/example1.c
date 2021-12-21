@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "AMkd.h"
 
 #ifdef _WIN32
 char help[] = "Witaj w programie do kodowania oraz dekodowania szyfru Aidem Media!\n\n"
@@ -44,8 +43,7 @@ void print_help(void)
 */
 int calc_shift(unsigned short *step, short *shift, unsigned short mvmnt)
 {
-    (*step)++;
-    if (*step > mvmnt) {
+    if (++(*step) > mvmnt) {
         *step = 1;
     }
     *shift = *step / 2 + *step % 2;
@@ -108,7 +106,7 @@ void cod(FILE *input, FILE *output, unsigned short var, bool reverse) {
     @param @a input - pointer to open input FILE stream
     @param @a output - pointer to open output FILE stream
 */
-void dec(FILE *input, FILE *output)
+int dec(FILE *input, FILE *output)
 {
     unsigned short mvmnt,
                    step = 0;
@@ -118,8 +116,7 @@ void dec(FILE *input, FILE *output)
          buffer;
     fpos_t prev_pos;
     if (fscanf(input, "{<%c:%hu>}", &direction, &mvmnt) != 2) {
-        fprintf(stderr, "Blad czytania wejscia: %s\n", input->_tmpfname);
-        return;
+        return -1;
     }
     switch (direction) {
         case 'c':
@@ -132,8 +129,7 @@ void dec(FILE *input, FILE *output)
             break;
         }
         default: {
-            fprintf(stderr, "Nieznany format pliku: %s\n", input->_tmpfname);
-            return;
+            return -2;
         }
     }
     while (fread(&buffer, 1, 1, input)) {
@@ -153,6 +149,27 @@ void dec(FILE *input, FILE *output)
         } else {
             fputc(buffer + calc_shift(&step, &shift, mvmnt) * direction_multiplier, output);
         }
+    }
+
+    return 0;
+}
+
+void run(FILE *input, FILE *output, char *file_name, bool decode)
+{
+    if (decode) {
+        int result = dec(input, output);
+
+        switch (result) {
+            case -1:
+                fprintf(stderr, "Blad czytania wejscia: %s\n", file_name);
+                break;
+
+            case -2:
+                fprintf(stderr, "Nieznany format pliku: %s\n", file_name);
+                break;
+        }
+    } else {
+        cod(input, output, 6, false);
     }
 }
 
@@ -217,22 +234,16 @@ int main(int argc, char **argv)
                 fprintf(stderr, "Cos poszlo nie tak przy tworzeniu pliku: %s\n", out_name);
                 return 0;
             }
-            if (options.decode) {
-                dec(input, output);
-            } else {
-                cod(input, output, 6, false);
-            }
+
+            run(input, output, argv[i], options.decode);
+
             fclose(output);
             fclose(input);
         }
     }
 
     if (options.file_count == 0) {
-        if (options.decode) {
-            dec(stdin, stdout);
-        } else {
-            cod(stdin, stdout, 6, false);
-        }
+        run(stdin, stdout, "STDIN", options.decode);
     }
 
     return 0;
