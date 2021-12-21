@@ -8,11 +8,11 @@
 int main(int argc, char **argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "Usage: executable [input filename] [output filename]");
+        fprintf(stderr, "Usage: executable [input filename] [output filename]\n");
         return EXIT_SUCCESS;
     }
 
-    FILE *input_file = fopen(argv[1], "rb");
+    FILE *input_file = fopen(argv[1], "r");
     if (input_file == NULL) {
         fprintf(stderr, "Could not open \"%s\": %s", argv[1], strerror(errno));
         exit(EXIT_FAILURE);
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     free(input_string);
 
     int output_length = strlen(output_string);
-    FILE *output_file = fopen(argv[2], "wb");
+    FILE *output_file = fopen(argv[2], "w");
     if (output_file == NULL) {
         fprintf(stderr, "Could not open \"%s\": %s", argv[2], strerror(errno));
         AMkd_deallocate_result(output_string);

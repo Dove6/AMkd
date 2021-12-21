@@ -33,7 +33,7 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
     #endif // DEBUG
         return (string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence)));
     } else {
-        char *sought_sequence = "\n";
+        const char *sought_sequence = "\n";
         const char *replace_sequence = "<E>";
         int line_break_count = 0;
         if (strlen(sought_sequence) > 0) {
@@ -341,7 +341,7 @@ AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_cycle_param *
         /*
             [TODO]
         */
-        setting = AMKD_CONFIG_NONE;
+        *setting = AMKD_CONFIG_NONE;
         if (warning_flags != NULL) {
             *warning_flags |= AMKD_WARNING_UNKNOWN_ENCODING;
         }

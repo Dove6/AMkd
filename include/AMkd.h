@@ -53,13 +53,13 @@ typedef unsigned int AMkd_cycle_param;
 
     Should work for any script taken from AM's games.
 */
-const AMkd_cycle_param AMKD_CONFIG_DEFAULT;
+extern const AMkd_cycle_param AMKD_CONFIG_DEFAULT;
 
 /*! \brief Empty encoding setting.
 
     Indicates no decoding and cannot be used as standalone decoding/encoding setting.
 */
-const AMkd_cycle_param AMKD_CONFIG_NONE;
+extern const AMkd_cycle_param AMKD_CONFIG_NONE;
 
 
 /*! \brief Decodes \a encoded_str and places it at \a *decoded_str.
