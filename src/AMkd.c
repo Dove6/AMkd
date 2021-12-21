@@ -7,38 +7,6 @@
 const AMkd_cycle_param AMKD_CONFIG_DEFAULT = 6;
 const AMkd_cycle_param AMKD_CONFIG_NONE = 0;
 
-enum AMkd_line_ending {
-    AMKD_LINE_ENDING_UNKNOWN = 0,
-    AMKD_LINE_ENDING_CRLF,
-    AMKD_LINE_ENDING_LF,
-    AMKD_LINE_ENDING_CR
-};
-typedef enum AMkd_line_ending AMkd_line_ending;
-
-static AMkd_line_ending AMkd_detect_line_ending(const char *input_str)
-{
-    char *lf_position = NULL, *cr_position = NULL;
-    lf_position = strchr(input_str, '\n');
-    if (lf_position != NULL) {
-        if (lf_position != input_str) {
-            if (input_str[lf_position - input_str - 1] == '\r') {
-                return AMKD_LINE_ENDING_CRLF;
-            } else {
-                return AMKD_LINE_ENDING_LF;
-            }
-        } else {
-            return AMKD_LINE_ENDING_LF;
-        }
-    } else {
-        cr_position = strchr(input_str, '\r');
-        if (cr_position != NULL) {
-            return AMKD_LINE_ENDING_CR;
-        } else {
-            return AMKD_LINE_ENDING_UNKNOWN;
-        }
-    }
-}
-
 static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param input_setting, AMkd_cycle_param output_setting)
 {
 #ifdef DEBUG
@@ -49,7 +17,7 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
         return string_length;
     } else if (output_setting == AMKD_CONFIG_NONE) {
         const char *sought_sequence = "<E>";
-        const char *replace_sequence = "\r\n";
+        const char *replace_sequence = "\n";
         int line_break_count = 0;
         const char *line_break = strstr(input_str, sought_sequence);
         while (line_break != NULL) {
@@ -65,27 +33,9 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
     #endif // DEBUG
         return (string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence)));
     } else {
-        char *sought_sequence = NULL;
+        char *sought_sequence = "\n";
         const char *replace_sequence = "<E>";
         int line_break_count = 0;
-        switch (AMkd_detect_line_ending(input_str)) {
-            case AMKD_LINE_ENDING_LF: {
-                sought_sequence = "\n";
-                break;
-            }
-            case AMKD_LINE_ENDING_CRLF: {
-                sought_sequence = "\r\n";
-                break;
-            }
-            case AMKD_LINE_ENDING_CR: {
-                sought_sequence = "\r";
-                break;
-            }
-            case AMKD_LINE_ENDING_UNKNOWN: {
-                sought_sequence = "";
-                break;
-            }
-        }
         if (strlen(sought_sequence) > 0) {
             const char *line_break = strstr(input_str, sought_sequence);
             while (line_break != NULL) {
@@ -93,7 +43,7 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
                 line_break = strstr(line_break + 1, sought_sequence);
             }
         }
-        int header_length = strlen("{<C:>}\r\n");
+        int header_length = strlen("{<C:>}\n");
         int step_count_length = 1;
         for (int step_count = output_setting; step_count > 9; step_count /= 10) {
             step_count_length++;
@@ -170,7 +120,6 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
             encoded_index += header_length;
         }
     }
-    bool encountered_standard_line_ending = false;
     while (encoded_index < encoded_length) {
     #ifdef DEBUG
         //printf(" Decoded: %d/%d (result state: %d/%d)\n", encoded_index, encoded_length, decoded_index, decoded_str_max_size);
@@ -180,10 +129,7 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
         if (step % 2 == 1) {
             movement *= -1;
         }
-        if (encoded_str[encoded_index] == '\r' || encoded_str[encoded_index] == '\n') {
-            if (!encountered_standard_line_ending) {
-                encountered_standard_line_ending = true;
-            }
+        if (encoded_str[encoded_index] == '\n') {
             encoded_index++;
         } else {
             bool detected_line_break = false;
@@ -194,15 +140,14 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
                 }
             }
             if (detected_line_break) {
-                //translate symbolic line breaks to literal CRLF
-                if (decoded_index + 2 <= decoded_str_max_size) {
-                    (*decoded_str)[decoded_index] = '\r';
-                    (*decoded_str)[decoded_index + 1] = '\n';
+                //translate symbolic line breaks to literal LF
+                if (decoded_index + 1 <= decoded_str_max_size) {
+                    (*decoded_str)[decoded_index] = '\n';
                 } else {
                     free(*decoded_str);
                     return AMKD_ERROR_INSUFFICIENT_BUFFER;
                 }
-                decoded_index += 2;
+                decoded_index++;
                 encoded_index += 3;
             } else {
                 if (decoded_index + 1 <= decoded_str_max_size) {
@@ -226,11 +171,6 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
             if (step > setting) {
                 step = 1;
             }
-        }
-    }
-    if (!encountered_standard_line_ending) {
-        if (warning_flags != NULL) {
-            *warning_flags |= AMKD_WARNING_UNKNOWN_LINE_ENDING;
         }
     }
     if (decoded_index < decoded_str_max_size) {
@@ -274,13 +214,7 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
     if (*encoded_str == NULL) {
         return AMKD_ERROR_OUT_OF_MEMORY;
     }
-    encoded_index = snprintf(*encoded_str, encoded_str_max_size, "{<C:%d>}\r\n", setting);
-    AMkd_line_ending line_ending = AMkd_detect_line_ending(decoded_str);
-    if (line_ending == AMKD_LINE_ENDING_UNKNOWN) {
-        if (warning_flags != NULL) {
-            *warning_flags |= AMKD_WARNING_UNKNOWN_LINE_ENDING;
-        }
-    }
+    encoded_index = snprintf(*encoded_str, encoded_str_max_size, "{<C:%d>}\n", setting);
     while (decoded_index < decoded_length) {
     #ifdef DEBUG
         //printf(" Encoded: %d/%d (result state: %d/%d)\n", decoded_index, decoded_length, encoded_index, encoded_str_max_size);
@@ -291,29 +225,7 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
         }
         bool detected_line_break = false;
         //detect literal line break
-        switch (line_ending) {
-            case AMKD_LINE_ENDING_LF: {
-                if (decoded_str[decoded_index] == '\n') {
-                    detected_line_break = true;
-                }
-                break;
-            }
-            case AMKD_LINE_ENDING_CRLF: {
-                if (decoded_index + 1 <= decoded_length) {
-                    if (decoded_str[decoded_index] == '\r' && decoded_str[decoded_index + 1] == '\n') {
-                        detected_line_break = true;
-                    }
-                }
-                break;
-            }
-            case AMKD_LINE_ENDING_CR: {
-                if (decoded_str[decoded_index] == '\r') {
-                    detected_line_break = true;
-                }
-                break;
-            }
-        }
-        if (detected_line_break) {
+        if (decoded_str[decoded_index] == '\n') {
             if (encoded_index + 3 <= encoded_str_max_size) {
                 //translate literal line breaks to symbolic line breaks
                 (*encoded_str)[encoded_index] = '<';
@@ -323,23 +235,18 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
                 free(*encoded_str);
                 return AMKD_ERROR_INSUFFICIENT_BUFFER;
             }
-            if (line_ending == AMKD_LINE_ENDING_CRLF) {
-                decoded_index += 2;
-            } else {
-                decoded_index++;
-            }
+            decoded_index++;
             encoded_index += 3;
             line_break_count++;
             //make literal line break every [step_count] symbolic line breaks
             if (line_break_count >= setting) {
-                if (encoded_index + 2 <= encoded_str_max_size) {
-                    (*encoded_str)[encoded_index] = '\r';
-                    (*encoded_str)[encoded_index + 1] = '\n';
+                if (encoded_index + 1 <= encoded_str_max_size) {
+                    (*encoded_str)[encoded_index] = '\n';
                 } else {
                     free(*encoded_str);
                     return AMKD_ERROR_INSUFFICIENT_BUFFER;
                 }
-                encoded_index += 2;
+                encoded_index += 1;
                 line_break_count = 0;
             }
         } else {
@@ -363,10 +270,9 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
             step = 1;
         }
     }
-    if (encoded_index + 2 <= encoded_str_max_size) {
-        (*encoded_str)[encoded_index] = '\r';
-        (*encoded_str)[encoded_index + 1] = '\n';
-        encoded_index += 2;
+    if (encoded_index + 1 <= encoded_str_max_size) {
+        (*encoded_str)[encoded_index] = '\n';
+        encoded_index += 1;
     } else {
         free(*encoded_str);
         return AMKD_ERROR_INSUFFICIENT_BUFFER;
@@ -502,9 +408,6 @@ const char *AMkd_get_warning_string(AMkd_warning_flags flags)
         }
         case AMKD_WARNING_UNKNOWN_ENCODING: {
             return "Encoding setting of input string impossible to detect programatically. [AMKD_WARNING_UNKNOWN_ENCODING]";
-        }
-        case AMKD_WARNING_UNKNOWN_LINE_ENDING: {
-            return "Unknown line ending sequence in input string (or no line endings at all). [AMKD_WARNING_UNKNOWN_LINE_ENDING]";
         }
         default: {
             return "Unknown warning.";

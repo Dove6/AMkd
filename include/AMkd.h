@@ -37,7 +37,6 @@ enum AMkd_warning_flags {
     AMKD_WARNING_MISSING_HEADER = 1 << 1, //!< Warning: no header to strip. \sa AMkd_strip_header
     AMKD_WARNING_CONTROL_CHARS = 1 << 2, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
     AMKD_WARNING_UNKNOWN_ENCODING = 1 << 3, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
-    AMKD_WARNING_UNKNOWN_LINE_ENDING = 1 << 4 //!< Warning: data occupies one line or has unexpected line endings (other than CRLF, LF or CR), which might in result be translated incorrectly.
 };
 /*! \brief Shorthand for #AMkd_warning_flags enumeration.
  */
