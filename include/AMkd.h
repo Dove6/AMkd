@@ -1,3 +1,6 @@
+#ifndef AMKD_H
+#define AMKD_H
+
 /*! \file AMkd.h
     \brief AMkd library header file.
 
@@ -137,3 +140,5 @@ const char *AMkd_get_error_string(AMkd_error_code code);
     \return Warning string associated with the least significant flag.
  */
 const char *AMkd_get_warning_string(AMkd_warning_flags flags);
+
+#endif  // AMKD_H

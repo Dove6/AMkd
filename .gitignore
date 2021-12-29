@@ -18,6 +18,7 @@ obj
 
 # Executables
 bin
+build
 *.exe
 *.out
 
@@ -31,5 +32,5 @@ bin
 # Notepad++ backup directory
 nppBackup
 
-# Doxygen configuration file
-Doxyfile
+# backup files
+*.bak
