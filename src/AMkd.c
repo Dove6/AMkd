@@ -57,8 +57,8 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_config input_con
     printf(" variables:\n");
     printf("  input_length: %d\n", input_length);
     printf("  linebreak_count: %d\n", linebreak_count);
-    printf("  strlen(replace_sequence): %d\n", strlen(replace_sequence));
-    printf("  strlen(sought_sequence): %d\n", strlen(sought_sequence));
+    printf("  strlen(replace_sequence): %u\n", strlen(replace_sequence));
+    printf("  strlen(sought_sequence): %u\n", strlen(sought_sequence));
     printf("  output_config: %d\n", output_config);
     printf("  header_length_diff: %d\n", header_length_diff);
     printf("  additional_decoded_linebreaks: %d\n", additional_decoded_linebreaks);
@@ -79,32 +79,32 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
     if (encoded_str == NULL) {
         return AMKD_ERROR_MISSING_INPUT;
     }
+
+    AMkd_config config_from_header = AMKD_CONFIG_NONE;
+    AMkd_error_code inner_error;
+    AMkd_warning_flags inner_warnings;
+    if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, &inner_warnings)) != AMKD_ERROR_NONE) {
+        return inner_error;
+    }
+    if (warning_flags != NULL) {
+        *warning_flags |= inner_warnings;
+    }
     if (config == AMKD_CONFIG_NONE) {
-        // zero-step config argument: read setting from encoded string header
-        AMkd_config config_from_header = AMKD_CONFIG_NONE;
-        AMkd_error_code inner_error;
-        if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, warning_flags)) != AMKD_ERROR_NONE) {
-            return inner_error;
-        }
-        if (config == AMKD_CONFIG_NONE) {
+        // use config read from header as there is no user-provided one
+        if (config_from_header == AMKD_CONFIG_NONE) {
             return AMKD_ERROR_MISSING_CONFIG;
         }
         config = config_from_header;
     } else {
-        AMkd_config config_from_header = AMKD_CONFIG_NONE;
-        AMkd_error_code inner_error;
-        if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, warning_flags)) != AMKD_ERROR_NONE) {
-            return inner_error;
-        }
-        if (config != AMKD_CONFIG_NONE) {
-            if (warning_flags != NULL) {
-                *warning_flags |= AMKD_WARNING_SURPLUS_CONFIG;
-            }
+        // config read from header is overriden by user-provided one
+        if (warning_flags != NULL && config_from_header != AMKD_CONFIG_NONE) {
+            *warning_flags |= AMKD_WARNING_SURPLUS_CONFIG;
         }
     }
 #ifdef DEBUG
     printf(" Config: %d\n", config);
 #endif  // DEBUG
+
     unsigned encoded_length = strlen(encoded_str),
         encoded_index = 0,
         decoded_index = 0,
@@ -117,67 +117,72 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
     if (*decoded_str == NULL) {
         return AMKD_ERROR_OUT_OF_MEMORY;
     }
-    {
-        char trash_char;
-        int trash_int;
-        unsigned header_length = 0;
-        if (sscanf(encoded_str, "{<%c:%d>}%n", &trash_char, &trash_int, &header_length) == 2) {
-            encoded_index += header_length;
-        }
-    }
+
+    unsigned header_length = 0;
+    sscanf(encoded_str, "{<%*c:%*d>}\n%n", &header_length);
+    encoded_index += header_length;
+
     while (encoded_index < encoded_length) {
-    #ifdef DEBUG
-        //printf(" Decoded: %d/%d (result state: %d/%d)\n", encoded_index, encoded_length, decoded_index, decoded_str_max_size);
-        //printf(" Step: %d, current encoded character: %c\n", step, encoded_str[encoded_index]);
-    #endif  // DEBUG
-        int movement = (step + 1) / 2;
-        if (step % 2 == 1) {
-            movement *= -1;
+        if (step > config) {
+            step = 1;
         }
-        if (encoded_str[encoded_index] == '\n') {
+        int shift = (step + 1) / 2;
+        if (step % 2 == 1) {
+            shift *= -1;
+        }
+
+        if (encoded_index + strlen(AMKD_LINEBREAK_DECODED) - 1 <= encoded_length
+                && !strncmp(encoded_str + encoded_index, AMKD_LINEBREAK_DECODED, strlen(AMKD_LINEBREAK_DECODED))) {
+        #ifdef VERBOSE_DEBUG
+            printf(" Skipping: '%s' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n", 
+                AMKD_LINEBREAK_DECODED, step, shift, encoded_index, encoded_length, decoded_index, decoded_str_max_size);
+        #endif  // VERBOSE_DEBUG
+
             encoded_index++;
-        } else {
-            bool detected_line_break = false;
-            // detect symbolic line break
-            if (encoded_index + 2 <= encoded_length) {
-                if (encoded_str[encoded_index] == '<' && encoded_str[encoded_index + 1] == 'E' && encoded_str[encoded_index + 2] == '>') {
-                    detected_line_break = true;
-                }
-            }
-            if (detected_line_break) {
-                // translate symbolic line breaks to literal LF
-                if (decoded_index + 1 <= decoded_str_max_size) {
-                    (*decoded_str)[decoded_index] = '\n';
-                } else {
-                    free(*decoded_str);
-                    return AMKD_ERROR_INSUFFICIENT_BUFFER;
-                }
-                decoded_index++;
-                encoded_index += 3;
+        } else if (encoded_index + strlen(AMKD_LINEBREAK_ENCODED) - 1 <= encoded_length
+                && !strncmp(encoded_str + encoded_index, AMKD_LINEBREAK_ENCODED, strlen(AMKD_LINEBREAK_ENCODED))) {
+            // translate symbolic line break to literal one
+            if (decoded_index + strlen(AMKD_LINEBREAK_DECODED) <= decoded_str_max_size) {
+                strcpy(*decoded_str + decoded_index, AMKD_LINEBREAK_DECODED);
             } else {
-                if (decoded_index + 1 <= decoded_str_max_size) {
-                    // write translated character
-                    (*decoded_str)[decoded_index] = encoded_str[encoded_index] + movement;
-                } else {
-                    // handle errors
-                    free(*decoded_str);
-                    return AMKD_ERROR_INSUFFICIENT_BUFFER;
-                }
-                // detect suspicious characters
+                free(*decoded_str);
+                return AMKD_ERROR_INSUFFICIENT_BUFFER;
+            }
+        #ifdef VERBOSE_DEBUG
+            printf(" Decoding: '%s'->'%s' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n", 
+                AMKD_LINEBREAK_ENCODED, AMKD_LINEBREAK_DECODED, step, shift, encoded_index, encoded_length,
+                decoded_index, decoded_str_max_size);
+        #endif  // VERBOSE_DEBUG
+
+            decoded_index += strlen(AMKD_LINEBREAK_DECODED);
+            encoded_index += strlen(AMKD_LINEBREAK_ENCODED);
+        } else {
+            if (decoded_index + 1 <= decoded_str_max_size) {
+                // decipher a character
+                (*decoded_str)[decoded_index] = encoded_str[encoded_index] + shift;
+            } else {
+                // handle errors
+                free(*decoded_str);
+                return AMKD_ERROR_INSUFFICIENT_BUFFER;
+            }
+            // detect suspicious characters
+            if (warning_flags != NULL) {
                 if ((*decoded_str)[decoded_index] < 32 || (*decoded_str)[decoded_index] == 127) {
-                    if (warning_flags != NULL) {
-                        *warning_flags |= AMKD_WARNING_CONTROL_CHARS;
-                    }
+                    *warning_flags |= AMKD_WARNING_CONTROL_CHARS;
                 }
-                encoded_index++;
-                decoded_index++;
-                step++;
             }
-            if (step > config) {
-                step = 1;
-            }
+        #ifdef VERBOSE_DEBUG
+            printf(" Decoding: '%c'->'%c' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n", 
+                encoded_str[encoded_index], (*decoded_str)[decoded_index], step, shift, encoded_index, encoded_length,
+                decoded_index, decoded_str_max_size);
+        #endif  // VERBOSE_DEBUG
+
+            encoded_index++;
+            decoded_index++;
+            step++;
         }
     }
+
     if (decoded_index < decoded_str_max_size) {
         (*decoded_str)[decoded_index] = '\0';
     } else {
