@@ -4,18 +4,18 @@
 #include <string.h>
 #include "../include/AMkd.h"
 
-const AMkd_cycle_param AMKD_CONFIG_DEFAULT = 6;
-const AMkd_cycle_param AMKD_CONFIG_NONE = 0;
+const AMkd_config AMKD_CONFIG_DEFAULT = 6;
+const AMkd_config AMKD_CONFIG_NONE = 0;
 
-static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param input_setting, AMkd_cycle_param output_setting)
+static unsigned AMkd_calculate_size(const char *input_str, AMkd_config input_config, AMkd_config output_config)
 {
 #ifdef DEBUG
     printf(" Calculating size...\n");
 #endif // DEBUG
     unsigned string_length = strlen(input_str) + 1;
-    if (input_setting == output_setting) {
+    if (input_config == output_config) {
         return string_length;
-    } else if (output_setting == AMKD_CONFIG_NONE) {
+    } else if (output_config == AMKD_CONFIG_NONE) {
         const char *sought_sequence = "<E>";
         const char *replace_sequence = "\n";
         int line_break_count = 0;
@@ -45,7 +45,7 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
         }
         int header_length = strlen("{<C:>}\n");
         int step_count_length = 1;
-        for (int step_count = output_setting; step_count > 9; step_count /= 10) {
+        for (int step_count = output_config; step_count > 9; step_count /= 10) {
             step_count_length++;
         }
         header_length += step_count_length;
@@ -55,15 +55,15 @@ static unsigned AMkd_calculate_size(const char *input_str, AMkd_cycle_param inpu
         printf("  line_break_count: %d\n", line_break_count);
         printf("  strlen(replace_sequence): %d\n", strlen(replace_sequence));
         printf("  strlen(sought_sequence): %d\n", strlen(sought_sequence));
-        printf("  output_setting: %d\n", output_setting);
+        printf("  output_config: %d\n", output_config);
         printf("  header_length: %d\n", header_length);
     #endif // DEBUG
         return (string_length + line_break_count * (strlen(replace_sequence) - strlen(sought_sequence))
-            + (line_break_count / output_setting + 1) * 2 + header_length);
+            + (line_break_count / output_config + 1) * 2 + header_length);
     }
 }
 
-AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cycle_param setting, AMkd_warning_flags *warning_flags)
+AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config config, AMkd_warning_flags *warning_flags)
 {
 #ifdef DEBUG
     printf("Decoding...\n");
@@ -74,37 +74,37 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
     if (encoded_str == NULL) {
         return AMKD_ERROR_MISSING_INPUT;
     }
-    if (setting == AMKD_CONFIG_NONE) {
-        //zero-step setting argument: read setting from encoded string header
-        AMkd_cycle_param header_setting = AMKD_CONFIG_NONE;
+    if (config == AMKD_CONFIG_NONE) {
+        //zero-step config argument: read setting from encoded string header
+        AMkd_config config_from_header = AMKD_CONFIG_NONE;
         AMkd_error_code inner_error;
-        if ((inner_error = AMkd_detect_encoding(encoded_str, &header_setting, warning_flags)) != AMKD_ERROR_NONE) {
+        if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, warning_flags)) != AMKD_ERROR_NONE) {
             return inner_error;
         }
-        if (setting == AMKD_CONFIG_NONE) {
-            return AMKD_ERROR_MISSING_SETTING;
+        if (config == AMKD_CONFIG_NONE) {
+            return AMKD_ERROR_MISSING_CONFIG;
         }
-        setting = header_setting;
+        config = config_from_header;
     } else {
-        AMkd_cycle_param header_setting = AMKD_CONFIG_NONE;
+        AMkd_config config_from_header = AMKD_CONFIG_NONE;
         AMkd_error_code inner_error;
-        if ((inner_error = AMkd_detect_encoding(encoded_str, &header_setting, warning_flags)) != AMKD_ERROR_NONE) {
+        if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, warning_flags)) != AMKD_ERROR_NONE) {
             return inner_error;
         }
-        if (setting != AMKD_CONFIG_NONE) {
+        if (config != AMKD_CONFIG_NONE) {
             if (warning_flags != NULL) {
-                *warning_flags |= AMKD_WARNING_SURPLUS_SETTING;
+                *warning_flags |= AMKD_WARNING_SURPLUS_CONFIG;
             }
         }
     }
 #ifdef DEBUG
-    printf(" Setting: %d\n", setting);
+    printf(" Config: %d\n", config);
 #endif // DEBUG
     unsigned encoded_length = strlen(encoded_str),
         encoded_index = 0,
         decoded_index = 0,
         step = 1,
-        decoded_str_max_size = AMkd_calculate_size(encoded_str, setting, AMKD_CONFIG_NONE);
+        decoded_str_max_size = AMkd_calculate_size(encoded_str, config, AMKD_CONFIG_NONE);
 #ifdef DEBUG
     printf(" Max decoded_str size: %d\n", decoded_str_max_size);
 #endif // DEBUG
@@ -168,7 +168,7 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
                 decoded_index++;
                 step++;
             }
-            if (step > setting) {
+            if (step > config) {
                 step = 1;
             }
         }
@@ -184,7 +184,7 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cy
     return AMKD_ERROR_NONE;
 }
 
-AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cycle_param setting, AMkd_warning_flags *warning_flags)
+AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config config, AMkd_warning_flags *warning_flags)
 {
 #ifdef DEBUG
     printf("Encoding...\n");
@@ -195,18 +195,18 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
     if (decoded_str == NULL) {
         return AMKD_ERROR_MISSING_INPUT;
     }
-    if (setting == AMKD_CONFIG_NONE) {
-        return AMKD_ERROR_MISSING_SETTING;
+    if (config == AMKD_CONFIG_NONE) {
+        return AMKD_ERROR_MISSING_CONFIG;
     }
 #ifdef DEBUG
-    printf(" Setting: %d\n", setting);
+    printf(" Config: %d\n", config);
 #endif // DEBUG
     unsigned decoded_length = strlen(decoded_str),
         decoded_index = 0,
         encoded_index = 0,
         step = 1,
         line_break_count = 0,
-        encoded_str_max_size = AMkd_calculate_size(decoded_str, AMKD_CONFIG_NONE, setting);
+        encoded_str_max_size = AMkd_calculate_size(decoded_str, AMKD_CONFIG_NONE, config);
 #ifdef DEBUG
     printf(" Max encoded_str size: %d\n", encoded_str_max_size);
 #endif // DEBUG
@@ -214,7 +214,7 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
     if (*encoded_str == NULL) {
         return AMKD_ERROR_OUT_OF_MEMORY;
     }
-    encoded_index = snprintf(*encoded_str, encoded_str_max_size, "{<C:%d>}\n", setting);
+    encoded_index = snprintf(*encoded_str, encoded_str_max_size, "{<C:%d>}\n", config);
     while (decoded_index < decoded_length) {
     #ifdef DEBUG
         //printf(" Encoded: %d/%d (result state: %d/%d)\n", decoded_index, decoded_length, encoded_index, encoded_str_max_size);
@@ -223,7 +223,6 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
         if (step % 2 == 0) {
             movement *= -1;
         }
-        bool detected_line_break = false;
         //detect literal line break
         if (decoded_str[decoded_index] == '\n') {
             if (encoded_index + 3 <= encoded_str_max_size) {
@@ -239,7 +238,7 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
             encoded_index += 3;
             line_break_count++;
             //make literal line break every [step_count] symbolic line breaks
-            if (line_break_count >= setting) {
+            if (line_break_count >= config) {
                 if (encoded_index + 1 <= encoded_str_max_size) {
                     (*encoded_str)[encoded_index] = '\n';
                 } else {
@@ -266,7 +265,7 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
             encoded_index++;
             step++;
         }
-        if (step > setting) {
+        if (step > config) {
             step = 1;
         }
     }
@@ -320,7 +319,7 @@ AMkd_error_code AMkd_strip_header(char *encoded_str, AMkd_warning_flags *warning
     return AMKD_ERROR_NONE;
 }
 
-AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_cycle_param *setting, AMkd_warning_flags *warning_flags)
+AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_config *config, AMkd_warning_flags *warning_flags)
 {
     if (warning_flags != NULL) {
         *warning_flags = AMKD_WARNING_NONE;
@@ -329,7 +328,7 @@ AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_cycle_param *
         return AMKD_ERROR_MISSING_INPUT;
     }
     char trash_char;
-    if (sscanf(encoded_str, "{<%c:%d>}", &trash_char, setting) == 2) {
+    if (sscanf(encoded_str, "{<%c:%d>}", &trash_char, config) == 2) {
         //case 1. header present
         return AMKD_ERROR_NONE;
     } else {
@@ -341,7 +340,7 @@ AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_cycle_param *
         /*
             [TODO]
         */
-        *setting = AMKD_CONFIG_NONE;
+        *config = AMKD_CONFIG_NONE;
         if (warning_flags != NULL) {
             *warning_flags |= AMKD_WARNING_UNKNOWN_ENCODING;
         }
@@ -355,8 +354,8 @@ const char *AMkd_get_error_string(AMkd_error_code code)
         case AMKD_ERROR_NONE: {
             return "No errors. [AMKD_ERROR_NONE]";
         }
-        case AMKD_ERROR_MISSING_SETTING: {
-            return "Provided setting with cycle step count of 0 for encoding or decoding. [AMKD_ERROR_MISSING_SETTING]";
+        case AMKD_ERROR_MISSING_CONFIG: {
+            return "Provided setting (cycle step count) of 0 for encoding or decoding. [AMKD_ERROR_MISSING_CONFIG]";
         }
         case AMKD_ERROR_OUT_OF_MEMORY: {
             return "No memory available for operation. [AMKD_ERROR_OUT_OF_MEMORY]";
@@ -397,8 +396,8 @@ const char *AMkd_get_warning_string(AMkd_warning_flags flags)
         case AMKD_WARNING_NONE: {
             return "No warnings. [AMKD_WARNING_NONE]";
         }
-        case AMKD_WARNING_SURPLUS_SETTING: {
-            return "Decoding setting present both in input string header and function argument. [AMKD_WARNING_SURPLUS_SETTING]";
+        case AMKD_WARNING_SURPLUS_CONFIG: {
+            return "Decoding setting present both in input string header and function argument. [AMKD_WARNING_SURPLUS_CONFIG]";
         }
         case AMKD_WARNING_MISSING_HEADER: {
             return "No header to strip. [AMKD_WARNING_MISSING_HEADER]";

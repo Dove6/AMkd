@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     }
 
     AMkd_warning_flags warning_flags;
-    AMkd_cycle_param input_encoding;
+    AMkd_config input_encoding;
     AMkd_error_code return_code;
     if ((return_code = AMkd_detect_encoding(input_string, &input_encoding, &warning_flags)) != AMKD_ERROR_NONE) {
         free(input_string);

@@ -16,7 +16,7 @@
  */
 enum AMkd_error_code {
     AMKD_ERROR_NONE = 0, //!< No error.
-    AMKD_ERROR_MISSING_SETTING, //!< Error: no cycle param provided for encoding/decoding.
+    AMKD_ERROR_MISSING_CONFIG, //!< Error: no cycle param provided for encoding/decoding.
     AMKD_ERROR_OUT_OF_MEMORY, //!< Error: no memory available for allocation for output string.
     AMKD_ERROR_MISSING_INPUT, //!< Error: received NULL as encoded/decoded string.
     AMKD_ERROR_INSUFFICIENT_BUFFER //!< Error: output buffer allocated by de-/encoding turned out to be too small.
@@ -36,7 +36,7 @@ typedef enum AMkd_error_code AMkd_error_code;
  */
 enum AMkd_warning_flags {
     AMKD_WARNING_NONE = 0, //!< No warnings.
-    AMKD_WARNING_SURPLUS_SETTING = 1 << 0, //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
+    AMKD_WARNING_SURPLUS_CONFIG = 1 << 0, //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
     AMKD_WARNING_MISSING_HEADER = 1 << 1, //!< Warning: no header to strip. \sa AMkd_strip_header
     AMKD_WARNING_CONTROL_CHARS = 1 << 2, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
     AMKD_WARNING_UNKNOWN_ENCODING = 1 << 3, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
@@ -50,48 +50,48 @@ typedef enum AMkd_warning_flags AMkd_warning_flags;
     Count of encoding steps in every cycle. Essential for correct operation. \n
     Value of 0 is logically illegal and thus used for expressing an empty setting.
  */
-typedef unsigned int AMkd_cycle_param;
+typedef unsigned int AMkd_config;
 
 /*! \brief Default encoding/decoding setting.
 
     Should work for any script taken from AM's games.
 */
-extern const AMkd_cycle_param AMKD_CONFIG_DEFAULT;
+extern const AMkd_config AMKD_CONFIG_DEFAULT;
 
 /*! \brief Empty encoding setting.
 
     Indicates no decoding and cannot be used as standalone decoding/encoding setting.
 */
-extern const AMkd_cycle_param AMKD_CONFIG_NONE;
+extern const AMkd_config AMKD_CONFIG_NONE;
 
 
 /*! \brief Decodes \a encoded_str and places it at \a *decoded_str.
 
     \param encoded_str Encoded null-terminated string.
     \param decoded_str Address of decoded null-terminated string "returned" by function.
-    \param setting Decoding setting. It has higher priority than (optional) header of \a encoded_str (except for empty setting). For defaults see #AMKD_CONFIG_DEFAULT
+    \param config Decoding setting. It has higher priority than (optional) header of \a encoded_str (except for empty setting). For defaults see #AMKD_CONFIG_DEFAULT
     \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 
     \warning Allocates memory for the decoded string: \a *decoded_str has to be manually freed after successful function execution.
-    On failure, function is guaranteed to clean up before returning. \sa AMkd_deallocate_result
+    On failure, function does the clean-up by itself before returning. \sa AMkd_deallocate_result
  */
-AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_cycle_param setting, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config config, AMkd_warning_flags *warning_flags);
 
 /*! \brief Encodes \a decoded_str and places it at \a *encoded_str.
 
     \param decoded_str Decoded null-terminated string.
     \param encoded_str Address of encoded null-terminated string "returned" by function.
-    \param setting Encoding setting. Cannot be empty (#AMKD_CONFIG_NONE). For defaults see #AMKD_CONFIG_DEFAULT
+    \param config Encoding setting. Cannot be empty (#AMKD_CONFIG_NONE). For defaults see #AMKD_CONFIG_DEFAULT
     \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 
     \warning Allocates memory for the encoded string: \a *encoded_str has to be manually freed after successful function execution.
-    On failure, function is guaranteed to clean up before returning. \sa AMkd_deallocate_result
+    On failure, function does the clean-up by itself before returning. \sa AMkd_deallocate_result
  */
-AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cycle_param setting, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config config, AMkd_warning_flags *warning_flags);
 
 /*! \brief Releases memory allocated by #AMkd_decode or #AMkd_encode.
 
@@ -102,6 +102,8 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_cy
 void AMkd_deallocate_result(char *result_str);
 
 /*! \brief Strips header from \a *encoded_str (if present).
+
+    The operation is in-place.
 
     \param encoded_str Address of encoded null-terminated string.
     \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
@@ -116,14 +118,14 @@ AMkd_error_code AMkd_strip_header(char *encoded_str, AMkd_warning_flags *warning
     Also, unknown encoding is indicated by #AMKD_WARNING_UNKNOWN_ENCODING return code.
 
     \param encoded_str Encoded null-terminated string.
-    \param setting Address of config value. Must be provided by user.
+    \param config Address of config value. Must be provided by user.
     \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 
     \todo Add more checks for better detection.
  */
-AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_cycle_param *setting, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_detect_encoding(const char *encoded_str, AMkd_config *config, AMkd_warning_flags *warning_flags);
 
 /*! \brief Translates given AMkd_error_code into human readable string.
 
