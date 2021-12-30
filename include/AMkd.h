@@ -19,7 +19,9 @@ enum AMkd_error_code {
     AMKD_ERROR_MISSING_CONFIG, //!< Error: no cycle param provided for encoding/decoding.
     AMKD_ERROR_OUT_OF_MEMORY, //!< Error: no memory available for allocation for output string.
     AMKD_ERROR_MISSING_INPUT, //!< Error: received NULL as encoded/decoded string.
-    AMKD_ERROR_INSUFFICIENT_BUFFER //!< Error: output buffer allocated by de-/encoding turned out to be too small.
+    AMKD_ERROR_INSUFFICIENT_BUFFER, //!< Error: output buffer allocated by de-/encoding turned out to be too small.
+    AMKD_ERROR_MISSING_HEADER, //!< Error: no header in provided string.
+    AMKD_ERROR_ILLEGAL_HEADER, //!< Error: found illegal config (0) in encoded string header. \sa AMkd_config
 };
 /*! \brief Shorthand for #AMkd_error_code enumeration.
  */
@@ -37,9 +39,8 @@ typedef enum AMkd_error_code AMkd_error_code;
 enum AMkd_warning_flags {
     AMKD_WARNING_NONE = 0, //!< No warnings.
     AMKD_WARNING_SURPLUS_CONFIG = 1 << 0, //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
-    AMKD_WARNING_MISSING_HEADER = 1 << 1, //!< Warning: no header to strip. \sa AMkd_strip_header
-    AMKD_WARNING_CONTROL_CHARS = 1 << 2, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
-    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 3, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
+    AMKD_WARNING_CONTROL_CHARS = 1 << 1, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
+    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 2, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
 };
 /*! \brief Shorthand for #AMkd_warning_flags enumeration.
  */
@@ -101,20 +102,19 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_co
  */
 void AMkd_deallocate_result(char *result_str);
 
-/*! \brief Strips header from \a *encoded_str (if present).
+/*! \brief Parses header located at the beginning of \a *encoded_str.
 
-    The operation is in-place.
-
-    \param encoded_str Address of encoded null-terminated string.
-    \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
+    \param encoded_str Address of encoded null-terminated string containing a header.
+    \param config Pointer to a variable where retrieved config value is to be stored. May be NULL (for ignoring the output).
+    \param length Pointer to a variable where total header length is to be stored. May be NULL (for ignoring the output).
 
     \return Successful execution indicator or appriopriate error code.
  */
-AMkd_error_code AMkd_strip_header(char *encoded_str, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_parse_header(const char *encoded_str, AMkd_config *config, unsigned *length);
 
-/*! \brief Tries to detect encoding in \a encoded_str and writes it into \a *setting.
+/*! \brief Tries to detect encoding in \a encoded_str and writes it into \a *config.
 
-    For no or unknown encoding, the provided structure becomes equal to #AMKD_CONFIG_NONE. \n
+    For no or unknown encoding, the value pointed by \a config becomes equal to #AMKD_CONFIG_NONE. \n
     Also, unknown encoding is indicated by #AMKD_WARNING_UNKNOWN_ENCODING return code.
 
     \param encoded_str Encoded null-terminated string.
