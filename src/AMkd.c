@@ -142,13 +142,12 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
             encoded_index += strlen(AMKD_LINEBREAK_DECODED);
         } else if (encoded_index + strlen(AMKD_LINEBREAK_ENCODED) - 1 <= encoded_length
                 && !strncmp(encoded_str + encoded_index, AMKD_LINEBREAK_ENCODED, strlen(AMKD_LINEBREAK_ENCODED))) {
-            // translate symbolic line break to literal one
-            if (decoded_index + strlen(AMKD_LINEBREAK_DECODED) <= decoded_str_max_size) {
-                strcpy(*decoded_str + decoded_index, AMKD_LINEBREAK_DECODED);
-            } else {
+            if (decoded_index + strlen(AMKD_LINEBREAK_DECODED) > decoded_str_max_size) {
                 free(*decoded_str);
                 return AMKD_ERROR_INSUFFICIENT_BUFFER;
             }
+            // translate a symbolic line break to a literal one
+            strcpy(*decoded_str + decoded_index, AMKD_LINEBREAK_DECODED);
         #ifdef VERBOSE_DEBUG
             printf(" Decoding: '%s'->'%s' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n",
                 AMKD_LINEBREAK_ENCODED, AMKD_LINEBREAK_DECODED, step, shift, encoded_index, encoded_length,
@@ -158,13 +157,12 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
             decoded_index += strlen(AMKD_LINEBREAK_DECODED);
             encoded_index += strlen(AMKD_LINEBREAK_ENCODED);
         } else {
-            if (decoded_index + 1 <= decoded_str_max_size) {
-                // decipher a character
-                (*decoded_str)[decoded_index] = encoded_str[encoded_index] + shift;
-            } else {
+            if (decoded_index + 1 > decoded_str_max_size) {
                 free(*decoded_str);
                 return AMKD_ERROR_INSUFFICIENT_BUFFER;
             }
+            // decipher a character
+            (*decoded_str)[decoded_index] = encoded_str[encoded_index] + shift;
             // detect suspicious characters
             if (warning_flags != NULL) {
                 if ((*decoded_str)[decoded_index] < 32 || (*decoded_str)[decoded_index] == 127) {
@@ -240,13 +238,12 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_co
 
         if (decoded_index + strlen(AMKD_LINEBREAK_DECODED) - 1 <= decoded_length
                 && !strncmp(decoded_str + decoded_index, AMKD_LINEBREAK_DECODED, strlen(AMKD_LINEBREAK_DECODED))) {
-            // translate literal line breaks to symbolic line breaks
-            if (encoded_index + strlen(AMKD_LINEBREAK_ENCODED) <= encoded_str_max_size) {
-                strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_ENCODED);
-            } else {
+            if (encoded_index + strlen(AMKD_LINEBREAK_ENCODED) > encoded_str_max_size) {
                 free(*encoded_str);
                 return AMKD_ERROR_INSUFFICIENT_BUFFER;
             }
+            // translate a literal line break to a symbolic line break
+            strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_ENCODED);
         #ifdef VERBOSE_DEBUG
             printf(" Encoding: '%s'->'%s' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n",
                 AMKD_LINEBREAK_DECODED, AMKD_LINEBREAK_ENCODED, step, shift, decoded_index, decoded_length,
@@ -259,12 +256,11 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_co
 
             // append a literal line break every [step_count] symbolic line breaks (for traditional reasons)
             if (line_break_count >= config) {
-                if (encoded_index + strlen(AMKD_LINEBREAK_DECODED) <= encoded_str_max_size) {
-                    strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_DECODED);
-                } else {
+                if (encoded_index + strlen(AMKD_LINEBREAK_DECODED) > encoded_str_max_size) {
                     free(*encoded_str);
                     return AMKD_ERROR_INSUFFICIENT_BUFFER;
                 }
+                strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_DECODED);
             #ifdef VERBOSE_DEBUG
                 printf(" Appending: '%s' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n",
                     AMKD_LINEBREAK_DECODED, step, shift, decoded_index, decoded_length,
@@ -281,13 +277,12 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_co
                     *warning_flags |= AMKD_WARNING_CONTROL_CHARS;
                 }
             }
-            if (encoded_index + 1 <= encoded_str_max_size) {
-                // encipher a character
-                (*encoded_str)[encoded_index] = decoded_str[decoded_index] + shift;
-            } else {
+            if (encoded_index + 1 > encoded_str_max_size) {
                 free(*encoded_str);
                 return AMKD_ERROR_INSUFFICIENT_BUFFER;
             }
+            // encipher a character
+            (*encoded_str)[encoded_index] = decoded_str[decoded_index] + shift;
         #ifdef VERBOSE_DEBUG
             printf(" Encoding: '%c'->'%c' (step: %d, shift: %d). Position: in %d/%d, out %d/%d\n",
                 decoded_str[decoded_index], (*encoded_str)[encoded_index], step, shift, decoded_index, decoded_length,
@@ -300,14 +295,13 @@ AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_co
         }
     }
 
-    // append a trailing literal line break
-    if (encoded_index + strlen(AMKD_LINEBREAK_DECODED) <= encoded_str_max_size) {
-        strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_DECODED);
-        encoded_index += strlen(AMKD_LINEBREAK_DECODED);
-    } else {
+    if (encoded_index + strlen(AMKD_LINEBREAK_DECODED) > encoded_str_max_size) {
         free(*encoded_str);
         return AMKD_ERROR_INSUFFICIENT_BUFFER;
     }
+    // append a trailing literal line break
+    strcpy(*encoded_str + encoded_index, AMKD_LINEBREAK_DECODED);
+    encoded_index += strlen(AMKD_LINEBREAK_DECODED);
 
     if (encoded_index < encoded_str_max_size) {
         (*encoded_str)[encoded_index] = '\0';
@@ -431,6 +425,7 @@ static unsigned count_set_bits(unsigned number)
     unsigned set_bits_count = 0;
     while (number != 0) {
         number &= number - 1;
+        set_bits_count++;
     }
     return set_bits_count;
 }
