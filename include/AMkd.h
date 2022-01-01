@@ -15,13 +15,14 @@
     Zero indicates no error and a positive value means that error has occured.
  */
 enum AMkd_error_code {
-    AMKD_ERROR_NONE = 0, //!< No error.
-    AMKD_ERROR_MISSING_CONFIG, //!< Error: no cycle param provided for encoding/decoding.
-    AMKD_ERROR_OUT_OF_MEMORY, //!< Error: no memory available for allocation for output string.
-    AMKD_ERROR_MISSING_INPUT, //!< Error: received NULL as encoded/decoded string.
-    AMKD_ERROR_INSUFFICIENT_BUFFER, //!< Error: output buffer allocated by de-/encoding turned out to be too small.
-    AMKD_ERROR_MISSING_HEADER, //!< Error: no header in provided string.
-    AMKD_ERROR_ILLEGAL_HEADER, //!< Error: found illegal config (0) in encoded string header. \sa AMkd_config
+    AMKD_ERROR_NONE = 0,  //!< No error.
+    AMKD_ERROR_MISSING_CONFIG,  //!< Error: no cycle param provided for encoding/decoding.
+    AMKD_ERROR_OUT_OF_MEMORY,  //!< Error: no memory available for allocation for output string.
+    AMKD_ERROR_MISSING_INPUT,  //!< Error: received NULL as encoded/decoded string.
+    AMKD_ERROR_INSUFFICIENT_BUFFER,  //!< Error: output buffer allocated by de-/encoding function turned out to be too small.
+    AMKD_ERROR_MISSING_HEADER,  //!< Error: no header in provided string.
+    AMKD_ERROR_ILLEGAL_HEADER,  //!< Error: found illegal config (0) in encoded string header. \sa AMkd_config
+    AMKD_ERROR_AMBIGUOUS_OUTPUT,  //!< Error: encoded non-line break characters as a literal or symbolic line break. \sa AMkd_encode
 };
 /*! \brief Shorthand for #AMkd_error_code enumeration.
  */
@@ -37,14 +38,26 @@ typedef enum AMkd_error_code AMkd_error_code;
     and to be checked by AND-ing the variable with a chosen flag.
  */
 enum AMkd_warning_flags {
-    AMKD_WARNING_NONE = 0, //!< No warnings.
-    AMKD_WARNING_SURPLUS_CONFIG = 1 << 0, //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
-    AMKD_WARNING_CONTROL_CHARS = 1 << 1, //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
-    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 2, //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
+    AMKD_WARNING_NONE = 0,  //!< No warnings.
+    AMKD_WARNING_SURPLUS_CONFIG = 1 << 0,  //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
+    AMKD_WARNING_CONTROL_CHARS = 1 << 1,  //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
+    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 2,  //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
 };
 /*! \brief Shorthand for #AMkd_warning_flags enumeration.
  */
 typedef enum AMkd_warning_flags AMkd_warning_flags;
+
+/*! \brief Structure holding encoding/decoding progress data.
+
+    Used in #AMkd_decode and #AMkd_encode for providing additional information in the case of error.
+ */
+struct AMkd_progress {
+    unsigned input_index;  //!< Position of last processed character from input buffer.
+    unsigned output_index;  //!< Position of last character written to output buffer.
+};
+/*! \brief Shorthand for #AMkd_progress struct.
+ */
+typedef struct AMkd_progress AMkd_progress;
 
 /*! \brief Encoding/decoding setting.
 
@@ -71,28 +84,31 @@ extern const AMkd_config AMKD_CONFIG_NONE;
     \param encoded_str Encoded null-terminated string.
     \param decoded_str Address of decoded null-terminated string "returned" by function.
     \param config Decoding setting. It has higher priority than (optional) header of \a encoded_str (except for empty setting). For defaults see #AMKD_CONFIG_DEFAULT
-    \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
+    \param error_details Pointer to structure used for storing decoding progress in the moment of error ocurrence. May be NULL (for ignoring information).
+    \param warning_flags Pointer to value used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 
     \warning Allocates memory for the decoded string: \a *decoded_str has to be manually freed after successful function execution.
     On failure, function does the clean-up by itself before returning. \sa AMkd_deallocate_result
  */
-AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config config, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_config config, AMkd_progress *error_details, AMkd_warning_flags *warning_flags);
 
 /*! \brief Encodes \a decoded_str and places it at \a *encoded_str.
 
     \param decoded_str Decoded null-terminated string.
     \param encoded_str Address of encoded null-terminated string "returned" by function.
     \param config Encoding setting. Cannot be empty (#AMKD_CONFIG_NONE). For defaults see #AMKD_CONFIG_DEFAULT
-    \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
+    \param error_details Pointer to structure used for storing encoding progress in the moment of error ocurrence. May be NULL (for ignoring information).
+    \param warning_flags Pointer to value used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 
     \warning Allocates memory for the encoded string: \a *encoded_str has to be manually freed after successful function execution.
     On failure, function does the clean-up by itself before returning. \sa AMkd_deallocate_result
+    One exception to this rule is #AMKD_ERROR_AMBIGUOUS_OUTPUT error. In such case \a *encoded_str contains partial output (null-terminated).
  */
-AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config config, AMkd_warning_flags *warning_flags);
+AMkd_error_code AMkd_encode(const char *decoded_str, char **encoded_str, AMkd_config config, AMkd_progress *error_details, AMkd_warning_flags *warning_flags);
 
 /*! \brief Releases memory allocated by #AMkd_decode or #AMkd_encode.
 
@@ -119,7 +135,7 @@ AMkd_error_code AMkd_parse_header(const char *encoded_str, AMkd_config *config, 
 
     \param encoded_str Encoded null-terminated string.
     \param config Address of config value. Must be provided by user.
-    \param warning_flags Pointer to structure used for storing warning data. May be NULL (for ignoring warnings).
+    \param warning_flags Pointer to value used for storing warning data. May be NULL (for ignoring warnings).
 
     \return Successful execution indicator or appriopriate error code.
 

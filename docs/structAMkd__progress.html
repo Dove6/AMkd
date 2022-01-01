@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AMkd: Globals</title>
+<title>AMkd: AMkd_progress Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -48,7 +48,6 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -63,20 +62,36 @@ $(function() {
 </iframe>
 </div>
 
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
+  <div class="headertitle">
+<div class="title">AMkd_progress Struct Reference</div>  </div>
+</div><!--header-->
 <div class="contents">
-&#160;<ul>
-<li>AMkd_config
-: <a class="el" href="AMkd_8h.html#a5104144173ad48ebb4ed1ae0670a6bb0">AMkd.h</a>
-</li>
-<li>AMkd_error_code
-: <a class="el" href="AMkd_8h.html#abc6f809206fb2e5f5f9060e34b124a41">AMkd.h</a>
-</li>
-<li>AMkd_progress
-: <a class="el" href="AMkd_8h.html#a9d0d7d420c0a74288d98ffbe277f3231">AMkd.h</a>
-</li>
-<li>AMkd_warning_flags
-: <a class="el" href="AMkd_8h.html#a9029af8608ac3e2b365ac80acb3944fe">AMkd.h</a>
-</li>
+
+<p>Structure holding encoding/decoding progress data.  
+ <a href="structAMkd__progress.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AMkd_8h_source.html">AMkd.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:ac3ec5957e0fc4ef76f8e40cd05389bd6"><td class="memItemLeft" align="right" valign="top"><a id="ac3ec5957e0fc4ef76f8e40cd05389bd6"></a>
+unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAMkd__progress.html#ac3ec5957e0fc4ef76f8e40cd05389bd6">input_index</a></td></tr>
+<tr class="memdesc:ac3ec5957e0fc4ef76f8e40cd05389bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of last processed character from input buffer. <br /></td></tr>
+<tr class="separator:ac3ec5957e0fc4ef76f8e40cd05389bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3a99072036c66c991af0ac9b05a2867"><td class="memItemLeft" align="right" valign="top"><a id="ae3a99072036c66c991af0ac9b05a2867"></a>
+unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAMkd__progress.html#ae3a99072036c66c991af0ac9b05a2867">output_index</a></td></tr>
+<tr class="memdesc:ae3a99072036c66c991af0ac9b05a2867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of last character written to output buffer. <br /></td></tr>
+<tr class="separator:ae3a99072036c66c991af0ac9b05a2867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Structure holding encoding/decoding progress data. </p>
+<p>Used in <a class="el" href="AMkd_8h.html#aa326248ad91d04179aa80c5f648004aa" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> and <a class="el" href="AMkd_8h.html#a0885c35af47472d28a440bfd68919e53" title="Encodes decoded_str and places it at *encoded_str.">AMkd_encode</a> for providing additional information in the case of error. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>include/<a class="el" href="AMkd_8h_source.html">AMkd.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

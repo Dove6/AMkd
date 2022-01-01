@@ -5,6 +5,22 @@
 #include <string.h>
 #include "../include/AMkd.h"
 
+unsigned min(unsigned a, unsigned b)
+{
+    if (a < b) {
+        return a;
+    }
+    return b;
+}
+
+unsigned max(unsigned a, unsigned b)
+{
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 3) {
@@ -12,7 +28,7 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    FILE *input_file = fopen(argv[1], "r");
+    FILE *input_file = fopen(argv[1], "rb");
     if (input_file == NULL) {
         fprintf(stderr, "Could not open \"%s\": %s", argv[1], strerror(errno));
         exit(EXIT_FAILURE);
@@ -26,9 +42,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "Could not tell the length of \"%s\": %s", argv[1], strerror(errno));
         exit(EXIT_FAILURE);
     }
-    rewind(input_file);
-    if (ferror(input_file) != 0) {
-        fprintf(stderr, "Could not rewind \"%s\": %s", argv[1], strerror(errno));
+    input_file = freopen(argv[1], "r", input_file);
+    if (input_file == NULL) {
+        fprintf(stderr, "Could not reopen \"%s\" in text mode: %s", argv[1], strerror(errno));
         exit(EXIT_FAILURE);
     }
     char *input_string = (char *)malloc(sizeof(char) * (input_length + 1));
@@ -47,6 +63,7 @@ int main(int argc, char **argv)
         errno = 0;
     }
 
+    AMkd_progress error_details;
     AMkd_warning_flags warning_flags;
     AMkd_config input_encoding;
     AMkd_error_code return_code;
@@ -61,9 +78,21 @@ int main(int argc, char **argv)
     char *output_string = NULL;
 
     if (input_encoding == AMKD_CONFIG_NONE) {
-        if ((return_code = AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT, &warning_flags)) != AMKD_ERROR_NONE) {
+        if ((return_code = AMkd_encode(input_string, &output_string, AMKD_CONFIG_DEFAULT, &error_details, &warning_flags)) != AMKD_ERROR_NONE) {
+            int errno_value = errno;
             fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(return_code));
-            fprintf(stderr, "errno state: %s\n", strerror(errno));
+            fprintf(stderr, "Processed input: %u/%lu characters,\n", error_details.input_index, strlen(input_string));
+            char last_chars[11];
+            last_chars[10] = '\0';
+            strncpy(last_chars, input_string + (error_details.input_index - min(error_details.input_index, 10)), min(error_details.input_index, 10));
+            fprintf(stderr, " last 10 (at most) processed characters: '%.10s'\n", last_chars);
+            if (return_code == AMKD_ERROR_AMBIGUOUS_OUTPUT) {
+                fprintf(stderr, "Resulting output: %u characters,\n", error_details.output_index);
+                strncpy(last_chars, output_string + (error_details.output_index - min(error_details.output_index, 10)), min(error_details.output_index, 10));
+                fprintf(stderr, " last 10 (at most) output characters: '%.10s'\n", last_chars);
+                free(output_string);
+            }
+            fprintf(stderr, "errno state: %s\n", strerror(errno_value));
             if (warning_flags != AMKD_WARNING_NONE) {
                 fprintf(stderr, "Warnings:\n");
                 for (unsigned position = 0; position < 16; position++) {
@@ -76,9 +105,10 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
     } else {
-        if ((return_code = AMkd_decode(input_string, &output_string, input_encoding, &warning_flags)) != AMKD_ERROR_NONE) {
+        if ((return_code = AMkd_decode(input_string, &output_string, input_encoding, &error_details, &warning_flags)) != AMKD_ERROR_NONE) {
+            int errno_value = errno;
             fprintf(stderr, "An error has occured: %s\n", AMkd_get_error_string(return_code));
-            fprintf(stderr, "errno state: %s\n", strerror(errno));
+            fprintf(stderr, "errno state: %s\n", strerror(errno_value));
             if (warning_flags != AMKD_WARNING_NONE) {
                 fprintf(stderr, "Warnings:\n");
                 for (unsigned position = 0; position < 16; position++) {

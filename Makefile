@@ -2,7 +2,7 @@ BLDDIR=build
 OBJDIR=obj
 SRCDIR=src
 EXMDIR=examples
-CFLAGS=-Wall -std=c99 -O2 -s
+CFLAGS=-Wall -Wswitch-enum -std=c99 -O2 -s
 ARFLAGS=crs
 LIBS=
 
