@@ -39,9 +39,8 @@ typedef enum AMkd_error_code AMkd_error_code;
  */
 enum AMkd_warning_flags {
     AMKD_WARNING_NONE = 0,  //!< No warnings.
-    AMKD_WARNING_SURPLUS_CONFIG = 1 << 0,  //!< Warning: cycle param present in encoded string and additionally provided by user; the latter is used. \sa AMkd_decode
-    AMKD_WARNING_CONTROL_CHARS = 1 << 1,  //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
-    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 2,  //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
+    AMKD_WARNING_CONTROL_CHARS = 1 << 0,  //!< Warning: control characters present in decoded string (may suggest incorrect decoding).
+    AMKD_WARNING_UNKNOWN_ENCODING = 1 << 1,  //!< Warning: encoding impossible to detect. \sa AMkd_detect_encoding
 };
 /*! \brief Shorthand for #AMkd_warning_flags enumeration.
  */
@@ -83,7 +82,7 @@ extern const AMkd_config AMKD_CONFIG_NONE;
 
     \param encoded_str Encoded null-terminated string.
     \param decoded_str Address of decoded null-terminated string "returned" by function.
-    \param config Decoding setting. It has higher priority than (optional) header of \a encoded_str (except for empty setting). For defaults see #AMKD_CONFIG_DEFAULT
+    \param config Decoding setting. Cannot be empty (#AMKD_CONFIG_NONE). Any header in \a encoded_str is ignored. For defaults see #AMKD_CONFIG_DEFAULT
     \param error_details Pointer to structure used for storing decoding progress in the moment of error ocurrence. May be NULL (for ignoring information).
     \param warning_flags Pointer to value used for storing warning data. May be NULL (for ignoring warnings).
 

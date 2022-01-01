@@ -84,26 +84,8 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
         return AMKD_ERROR_MISSING_INPUT;
     }
 
-    AMkd_config config_from_header = AMKD_CONFIG_NONE;
-    AMkd_error_code inner_error;
-    AMkd_warning_flags inner_warnings;
-    if ((inner_error = AMkd_detect_encoding(encoded_str, &config_from_header, &inner_warnings)) != AMKD_ERROR_NONE) {
-        return inner_error;
-    }
-    if (warning_flags != NULL) {
-        *warning_flags |= inner_warnings;
-    }
     if (config == AMKD_CONFIG_NONE) {
-        // use config read from header as there is no user-provided one
-        if (config_from_header == AMKD_CONFIG_NONE) {
-            return AMKD_ERROR_MISSING_CONFIG;
-        }
-        config = config_from_header;
-    } else {
-        // config read from header is overriden by user-provided one
-        if (warning_flags != NULL && config_from_header != AMKD_CONFIG_NONE) {
-            *warning_flags |= AMKD_WARNING_SURPLUS_CONFIG;
-        }
+        return AMKD_ERROR_MISSING_CONFIG;
     }
 #if defined DEBUG || defined VERBOSE_DEBUG
     printf(" Config: %d\n", config);
@@ -121,6 +103,7 @@ AMkd_error_code AMkd_decode(const char *encoded_str, char **decoded_str, AMkd_co
         return AMKD_ERROR_OUT_OF_MEMORY;
     }
 
+    // skip the header (if present)
     unsigned header_length = 0;
     AMkd_parse_header(encoded_str, NULL, &header_length);
     decoding_progress.input_index += header_length;
@@ -484,9 +467,6 @@ const char *AMkd_get_warning_string(AMkd_warning_flags flags)
     switch (flags) {
         case AMKD_WARNING_NONE: {
             return "No warnings. [AMKD_WARNING_NONE]";
-        }
-        case AMKD_WARNING_SURPLUS_CONFIG: {
-            return "Decoding setting present both in input string header and function argument. [AMKD_WARNING_SURPLUS_CONFIG]";
         }
         case AMKD_WARNING_CONTROL_CHARS: {
             return "Control characters present in decoded string. [AMKD_WARNING_CONTROL_CHARS]";

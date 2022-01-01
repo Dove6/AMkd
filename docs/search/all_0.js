@@ -25,6 +25,5 @@ var searchData=
   ['amkd_5fwarning_5fcontrol_5fchars_22',['AMKD_WARNING_CONTROL_CHARS',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6e436657cd99d005d4c3861501c462f',1,'AMkd.h']]],
   ['amkd_5fwarning_5fflags_23',['AMkd_warning_flags',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9',1,'AMkd_warning_flags():&#160;AMkd.h'],['../AMkd_8h.html#a9029af8608ac3e2b365ac80acb3944fe',1,'AMkd_warning_flags():&#160;AMkd.h']]],
   ['amkd_5fwarning_5fnone_24',['AMKD_WARNING_NONE',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9aec6e7af30b92294badbcbbbb5944f521',1,'AMkd.h']]],
-  ['amkd_5fwarning_5fsurplus_5fconfig_25',['AMKD_WARNING_SURPLUS_CONFIG',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6a788bc2f7128364954567b31db82f4',1,'AMkd.h']]],
-  ['amkd_5fwarning_5funknown_5fencoding_26',['AMKD_WARNING_UNKNOWN_ENCODING',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892',1,'AMkd.h']]]
+  ['amkd_5fwarning_5funknown_5fencoding_25',['AMKD_WARNING_UNKNOWN_ENCODING',['../AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892',1,'AMkd.h']]]
 ];

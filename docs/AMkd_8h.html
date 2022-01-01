@@ -125,9 +125,8 @@ Enumerations</h2></td></tr>
 <tr class="memdesc:a005c469eceb5f95b7580fdb80cb76c0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return code for signaling successful execution or failure of library functions.  <a href="AMkd_8h.html#a005c469eceb5f95b7580fdb80cb76c0b">More...</a><br /></td></tr>
 <tr class="separator:a005c469eceb5f95b7580fdb80cb76c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad9631d66338e7c10fc8b1315cac48b9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9">AMkd_warning_flags</a> { <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9aec6e7af30b92294badbcbbbb5944f521">AMKD_WARNING_NONE</a> = 0
-, <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6a788bc2f7128364954567b31db82f4">AMKD_WARNING_SURPLUS_CONFIG</a> = 1 &lt;&lt; 0
-, <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6e436657cd99d005d4c3861501c462f">AMKD_WARNING_CONTROL_CHARS</a> = 1 &lt;&lt; 1
-, <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892">AMKD_WARNING_UNKNOWN_ENCODING</a> = 1 &lt;&lt; 2
+, <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9ae6e436657cd99d005d4c3861501c462f">AMKD_WARNING_CONTROL_CHARS</a> = 1 &lt;&lt; 0
+, <a class="el" href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892">AMKD_WARNING_UNKNOWN_ENCODING</a> = 1 &lt;&lt; 1
  }</td></tr>
 <tr class="memdesc:aad9631d66338e7c10fc8b1315cac48b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binary warning flags set to be passed as an argument to library functions supporting warning handling.  <a href="AMkd_8h.html#aad9631d66338e7c10fc8b1315cac48b9">More...</a><br /></td></tr>
 <tr class="separator:aad9631d66338e7c10fc8b1315cac48b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,9 +245,6 @@ Flags are to be set by OR-ing previous state of variable with new warning and to
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9aec6e7af30b92294badbcbbbb5944f521"></a>AMKD_WARNING_NONE&#160;</td><td class="fielddoc"><p>No warnings. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9ae6a788bc2f7128364954567b31db82f4"></a>AMKD_WARNING_SURPLUS_CONFIG&#160;</td><td class="fielddoc"><p>Warning: cycle param present in encoded string and additionally provided by user; the latter is used. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="AMkd_8h.html#aa326248ad91d04179aa80c5f648004aa" title="Decodes encoded_str and places it at *decoded_str.">AMkd_decode</a> </dd></dl>
-</td></tr>
 <tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9ae6e436657cd99d005d4c3861501c462f"></a>AMKD_WARNING_CONTROL_CHARS&#160;</td><td class="fielddoc"><p>Warning: control characters present in decoded string (may suggest incorrect decoding). </p>
 </td></tr>
 <tr><td class="fieldname"><a id="aad9631d66338e7c10fc8b1315cac48b9a2533090ce71c897c08cce3ed25672892"></a>AMKD_WARNING_UNKNOWN_ENCODING&#160;</td><td class="fielddoc"><p>Warning: encoding impossible to detect. </p>
@@ -335,7 +331,7 @@ Flags are to be set by OR-ing previous state of variable with new warning and to
   <table class="params">
     <tr><td class="paramname">encoded_str</td><td>Encoded null-terminated string. </td></tr>
     <tr><td class="paramname">decoded_str</td><td>Address of decoded null-terminated string "returned" by function. </td></tr>
-    <tr><td class="paramname">config</td><td>Decoding setting. It has higher priority than (optional) header of <em>encoded_str</em> (except for empty setting). For defaults see <a class="el" href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2" title="Default encoding/decoding setting.">AMKD_CONFIG_DEFAULT</a> </td></tr>
+    <tr><td class="paramname">config</td><td>Decoding setting. Cannot be empty (<a class="el" href="AMkd_8h.html#ac734f266be9849d0654bdbe22a472665" title="Empty encoding setting.">AMKD_CONFIG_NONE</a>). Any header in <em>encoded_str</em> is ignored. For defaults see <a class="el" href="AMkd_8h.html#a5330ab68322cf515ad63f88f8112b8d2" title="Default encoding/decoding setting.">AMKD_CONFIG_DEFAULT</a> </td></tr>
     <tr><td class="paramname">error_details</td><td>Pointer to structure used for storing decoding progress in the moment of error ocurrence. May be NULL (for ignoring information). </td></tr>
     <tr><td class="paramname">warning_flags</td><td>Pointer to value used for storing warning data. May be NULL (for ignoring warnings).</td></tr>
   </table>
